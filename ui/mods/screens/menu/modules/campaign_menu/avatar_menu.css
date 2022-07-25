@@ -1,0 +1,30 @@
+.new-campaign-menu-module .row > .l-progressbar-container
+{
+    top: 0;
+    left: 4.0rem;
+    bottom: 0;
+    width: 12.7rem;
+    height: 2.2rem;
+    position: absolute;
+    margin: auto;
+}
+
+.new-campaign-menu-module > .dialog .content .single-column,
+{
+    padding-top: 5.0rem;
+    width: 55.0rem;
+    height: 100%;
+    float: left;
+}
+
+
+
+.new-campaign-menu-module > .dialog .content .single-column .row,
+{
+    width: 51.0rem;
+    float: left;
+    position: relative;
+    padding-top : 1.0rem;
+    padding-left: 2.0rem;
+}
+
