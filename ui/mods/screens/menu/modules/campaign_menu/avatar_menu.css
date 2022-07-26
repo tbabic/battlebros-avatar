@@ -1,12 +1,73 @@
 .new-campaign-menu-module .row > .l-progressbar-container
 {
-    top: 0;
-    left: 4.0rem;
-    bottom: 0;
+
     width: 12.7rem;
     height: 2.2rem;
+	display: inline-block;
+}
+
+.new-campaign-menu-module .l-progressbar-container > .ui-control.progressbar.has-frame {
+    
+    background-size: 12.7rem 2.2rem;
+    background-repeat: no-repeat;
+}
+
+.new-campaign-menu-module .row > img
+{
+
+    width: 2.6rem;
+    height: 2.6rem;
+
+}
+
+.new-campaign-menu-module .row .talent
+{
+	position: absolute;
+	z-index: 20;
+}
+
+.new-campaign-menu-module .is-selected img.talent-button,
+.new-campaign-menu-module img.talent-button
+{
+	top: -2.3rem;
+	left: 0rem;
+}
+
+
+
+.new-campaign-menu-module .l-increase-button-container .ui-control.button-8 >  span.talent-button
+{
+	left: 0.5rem;
+}
+
+
+
+.new-campaign-menu-module .l-increase-button-container
+{
+    width: 4.2rem;
+    height: 2.8rem;
+	display: inline-block;
+}
+
+.new-campaign-menu-module .l-increase-button-container > .ui-control.button-8 {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-size: 4.2rem 2.8rem;
+    text-shadow: 1px 1px 1px #000;
+    color: #dda21f;
+	margin-top: 0.4rem;
+}
+
+.new-campaign-menu-module .l-increase-button-container .ui-control.button-8 > .label {
+    top: -0.3rem;
+    bottom: 0;
+    left: 0;
+    right: 0;
     position: absolute;
-    margin: auto;
+    margin-top: 0.4rem;
+    text-align: center;
+    overflow: hidden;
 }
 
 .new-campaign-menu-module > .dialog .content .single-column,

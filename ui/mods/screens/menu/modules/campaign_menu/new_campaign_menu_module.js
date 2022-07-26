@@ -16,11 +16,11 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 
 		var inputLayout = $('<div class="l-input"/>');
 		row.append(inputLayout);
-		this.mCompanyName = inputLayout.createInput('Battle Brothers', 0, 32, 1, function (_input)
+		this.avatarName = inputLayout.createInput('Battle Brothers', 0, 32, 1, function (_input)
 		{
 			if(self.mStartButton !== null) self.mStartButton.enableButton(_input.getInputTextLength() >= 1);
 		}, 'title-font-big font-bold font-color-brother-name'); 
-		this.mCompanyName.setInputText('Battle Brothers');
+		this.avatarName.setInputText('Battle Brothers');
 		
 
 		this.createSkillsContent(leftColumn);
@@ -37,6 +37,7 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 			self.mSecondPanel.addClass('display-block').removeClass('display-none');
 			self.mCancelButton.changeButtonText("Previous");
 			self.mStartButton.enableButton(self.mCompanyName.getInputTextLength() >= 1);
+			self.notifyBackendOriginSelected();
 		}
 		else if(self.mSecondPanel.hasClass('display-block'))
 		{
@@ -85,6 +86,19 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
             self.mStartButton.enableButton(true);
     	}    	
     });
+}
+
+NewCampaignMenuModule.prototype.notifyBackendOriginSelected = function() {
+	if (this.mSQHandle !== null)
+	{
+		var selectedScenario = this.mScenarios[this.mSelectedScenario];
+		SQ.call(this.mSQHandle, 'onCampaignOriginSelected', selectedScenario.ID);
+	}
+}
+
+NewCampaignMenuModule.prototype.avatarData = function(data) {
+	this.backgroundData = data;
+	this.avatarName.setInputText(data.name);
 }
 
 NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
@@ -205,7 +219,7 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
         }
     };
     
-
+	this.backgroundDataControls = {};
 
 	$.each(statsRows, function(_skill, _skillValue)
 	{
@@ -220,42 +234,105 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
 
 NewCampaignMenuModule.prototype.createSkillsContentRow = function (_skill, _skillValue, _parentDiv)
 {
+
+	if (this.avatar== undefined) {
+		this.avatar = {
+			data : {},
+			controls : {}
+		};
+	}
+	this.avatar.data[_skill].value = 50;
+	this.avatar.data[_skill].talents = 3;
+	
+	
+	
+
+	
     var self = this;
 
 
 	var row = $('<div class="row"/>');
 	_parentDiv.append(row);
-	// row.bindTooltip({ contentType: 'ui-element', elementId: _skillValue.TooltipId });
+	row.bindTooltip({ contentType: 'ui-element', elementId: _skillValue.TooltipId });
 
-	// var image = $('<img/>');
-	// image.attr('src', _skillValue.IconPath);
-	// row.append(image);
+	var image = $('<img/>');
+	image.attr('src', _skillValue.IconPath);
+	row.append(image);
 	
 	//TODO: talents
-	//_skillValue.Talent = $('<img class="talent" src="' + Path.GFX + 'ui/icons/talent_' + _stats[_skillValue.TalentIdentifier] + '.png"/>');
-	//_skillValue.Talent.css({ 'width': '3.6rem', 'height': '1.8rem' });
-	//row.append(_skillValue.Talent);
+	this.avatar.controls[_skill].talentStars = $('<img class="talent" src="' + Path.GFX + 'ui/icons/talent_' + '3' + '.png"/>');
+	this.avatar.controls[_skill].talentStars.css({ 'width': '3.6rem', 'height': '1.8rem' });
+	row.append(this.avatar.controls[_skill].talentStars);
 
 	var progressbarLayout = $('<div class="l-progressbar-container"/>');
 	row.append(progressbarLayout);
-	_skillValue.Progressbar = progressbarLayout.createProgressbar(true, _skillValue.StyleName);
+	this.avatar.controls[_skill].progressbar = progressbarLayout.createProgressbar(true, _skillValue.StyleName);
 	
-	_skillValue.Progressbar.changeProgressbarNormalWidth(50, 100, true);
-	_skillValue.Progressbar.changeProgressbarLabel('' + 50);
+	this.avatar.controls[_skill].progressbar.changeProgressbarNormalWidth(this.avatar.data[_skill].value, _skillValue.ProgressbarValueIdentifierMax, true);
+	this.avatar.controls[_skill].progressbar.changeProgressbarLabel('' + this.avatar.data[_skill].value);
 	
 
-	// var buttonLayout = $('<div class="banner-container"/>');
-	// row.append(buttonLayout);
+	var buttonLayout = $('<div class="l-increase-button-container"/>');
+	row.append(buttonLayout);
+	
+	this.avatar.controls[_skill].changeSkill(value) {
+		var newValue = +self.avatar.data[_skill].value + +value;
+		self.avatar.controls[_skill].setSkill(newValue);
+	}
 
-	// _skillValue.Button = buttonLayout.createTextButton("+", function(_button)
-	// _skillValue.Button = buttonLayout.createTextButton("+", function(_button)
-	// {
-	//	/*skill value button clicked*/
-	// }, 'next-banner-button', 8);
+	this.avatar.controls[_skill].setSkill(value) {
+		var maxValue = self.backgroundData[_skill].max;
+		var minValue = self.backgroundData[_skill].min;
+		self.avatar.controls[_skill].progressbar.changeProgressbarNormalWidth(value, maxValue, true);
+		self.avatar.controls[_skill].progressbar.changeProgressbarLabel('' + value);
+	}
+
+	this.avatar.controls[_skill].decreaseSkillButton = buttonLayout.createTextButton("-", function(_button)
+	{
+		self.avatar.controls[_skill].changeSkill(-1);
+	}, 'next-banner-button', 8);
+
+	var buttonLayout = $('<div class="l-increase-button-container"/>');
+	row.append(buttonLayout);
+	this.avatar.controls[_skill].inreaseSkillButton = buttonLayout.createTextButton("+", function(_button)
+	{
+		self.avatar.controls[_skill].changeSkill(+1);
+	}, 'next-banner-button', 8);
+
+	//talent buttons
+
+	this.avatar.controls[_skill].changeTalents(value) {
+		var newValue = +self.avatar.data[_skill].talents + +value;
+		self.avatar.controls[_skill].setTalents(newValue);
+	}
+
+	this.avatar.controls[_skill].setTalents(value) {
+		self.avatar.
+		self.avatar.controls[_skill].talentStars.attr("src", Path.GFX + "ui/icons/talent_" + value + ".png");
+	}
+
+
+	var buttonLayout = $('<div class="l-increase-button-container"/>');
+	row.append(buttonLayout);
+	var inButtonLayout = $('<img class="talent-button" src="' + Path.GFX + 'ui/icons/talent_1.png"/><span class="talent-button label" >+</>');
+	this.avatar.controls[_skill].decreaseTalentButton = buttonLayout.createCustomButton(inButtonLayout, function(_button)
+	{
+		/*skill value button clicked*/
+	}, 'next-banner-button', 8);
+
+	var buttonLayout = $('<div class="l-increase-button-container"/>');
+	row.append(buttonLayout);
+	var inButtonLayout = $('<img class="talent-button" src="' + Path.GFX + 'ui/icons/talent_1.png"/><span class="talent-button label" >-</>');
+	this.avatar.controls[_skill].inreaseTalentButton = buttonLayout.createCustomButton(inButtonLayout, function(_button)
+	{
+		/*skill value button clicked*/
+	}, 'next-banner-button', 8);
+
 	
 	// todo: check if I need this data
 	//_skillValue.Button.data('stat', _skill);
 	//_skillValue.Button.data('isIncreased', false);
+
 
 };
 
