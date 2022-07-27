@@ -82,6 +82,7 @@
 			};
 			
 			local attributes = {};
+			local defaultAttributes = {};
 
 			foreach(key, value in a)
 			{
@@ -95,7 +96,10 @@
 			local backgroundData = {
 				id = backgroundObj.m.ID,
 				name = backgroundObj.m.Name,
-				attributes = attributes
+				icon = backgroundObj.m.Icon,
+				//description = this.buildTextFromTemplate(this.onBuildDescription(), vars)
+				attributes = attributes,
+				
 			}
 			this.m.JSHandle.asyncCall("avatarData", backgroundData)
 		};
