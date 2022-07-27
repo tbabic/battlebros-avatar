@@ -82,6 +82,13 @@ AvatarSkillModule.prototype.initialize = function(_parentDiv) {
 	
 }
 
+AvatarSkillModule.prototype.setValues = function(value, min, max) {
+	this.value = value;
+	this.minValue = min;
+	this.maxValue = max;
+	this.visualizeSkillValue();
+}
+
 AvatarSkillModule.prototype.increaseSkill = function() {
 	if (this.value >= this.maxValue) {
 		return;

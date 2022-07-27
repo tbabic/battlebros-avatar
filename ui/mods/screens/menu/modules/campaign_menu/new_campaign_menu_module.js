@@ -25,6 +25,7 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		
 
 		this.createSkillsContent(leftColumn);
+		this.createTraitsContent(leftColumn);
 		
 		
 		var rightColumn = $('<div class="column" />');
@@ -110,6 +111,11 @@ NewCampaignMenuModule.prototype.notifyBackendOriginSelected = function() {
 NewCampaignMenuModule.prototype.avatarData = function(data) {
 	//TODO: data from backend about background for selected origin
 	this.backgroundData = data;
+	for(skill in data.attributes) {
+		let attr = data.attributes[skill];
+		this.avatarSkills[skill].setValues(attr.avg, attr.min, attr.max);
+	}
+	this.backgroundImage.attr('src', Path.GFX + data.icon);
 	
 }
 
@@ -134,7 +140,7 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
 			pointsWeight: 4
         },
 
-		Fatigue:
+		Stamina:
 		{
             IconPath: Path.GFX + Asset.ICON_FATIGUE,
             StyleName: ProgressbarStyleIdentifier.Fatigue,
@@ -193,7 +199,7 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
 			pointsWeight: 6
         },
 
-		RangeSkill:
+		RangedSkill:
 		{
             IconPath: Path.GFX + Asset.ICON_RANGE_SKILL,
             StyleName: ProgressbarStyleIdentifier.RangeSkill,
@@ -223,7 +229,7 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
 			pointsWeight: 6
         },
 
-		RangeDefense:
+		RangedDefense:
 		{
             IconPath: Path.GFX + Asset.ICON_RANGE_DEFENCE,
             StyleName: ProgressbarStyleIdentifier.RangeDefense,
@@ -304,7 +310,44 @@ var PointsControl = function() {
 	};
 }
 
+NewCampaignMenuModule.prototype.createTraitsContent = function (parentDiv) {
+	var selft = this;
+	
+	var row = $('<div class="row" />');
+	parentDiv.append(row);
+	row.append($('<div class="title title-font-big font-color-title ">Traits: </label>'));
+	
+	var row = $('<div class="row" />');
+	parentDiv.append(row);
+	
+	
+	row.createImageButton(Path.GFX + Asset.BUTTON_PREVIOUS_BANNER, function ()
+	{
+		
+	}, 'avatar-arrow-button', 6);
+
+	row.createImageButton(Path.GFX + Asset.BUTTON_NEXT_BANNER, function ()
+	{
+		
+	}, 'avatar-arrow-button', 6);
+	
+	
+	this.trait1;
+	var trait1Right;
+	
+	
+	
+	
+	
+}
+
 NewCampaignMenuModule.prototype.createBackgroundContent = function (parentDiv) {
+	
+	var row = $('<div class="row" />');
+	parentDiv.append(row);
+	this.backgroundImage = $('<img/>');
+	row.append($('<label class="background-title title-font-big font-color-title ">Background: </label>'));
+	row.append(this.backgroundImage);
 }
 
 
