@@ -94,15 +94,111 @@
     height: 2rem;
     float: left;
     margin-bottom: 2rem;
-    /* margin-top: -0.5rem; */
+    margin-right: 2rem;
     line-height: 2.0rem;
-    border-image: url(../../../../../gfx/ui/skin/line_gold.png) 0% 0% 100% 0%;
+   
     border-image-outset: 0 0 0.5rem 0;
 }
 
 .ui-control.button-6.avatar-arrow-button {
-	width: 4rem;
-	height: 4rem;
+	height: 4.1rem;
+    width: 4.5rem;
+    vertical-align: middle;
 	display: inline-block;
 }
+
+
+
+.trait > img {
+	height: 3rem;
+	position: absolute;
+	top: 1rem;
+	left: 8.2rem;
+}
+
+.trait > label {
+	
+	position: absolute;
+	top: 1rem;
+	left: 8.2rem;
+}
+
+.trait {
+	width: 6rem;
+	display: inline-block;
+	text-align: center;
+
+}
+
+textArea.avatar-history2 {
+	width: 100%;
+	height: 25rem;
+	
+	
+	border-width: 1px;
+	border-radius: 16px;
+	border-image-slice: 1;
+	
+	background-color: rgb(39, 31, 26);
+	
+	color: #dda21f !important;
+}
+
+textArea.avatar-history2::after {
+	
+	background: linear-gradient(to left, #272727, #AFAFAF, #272727);
+	position: absolute;
+    top: -1px; bottom: -1px;
+    left: -1px; right: -1px;
+    content: '';
+    z-index: -1;
+    border-radius: 3px;
+}
+
+
+textArea.avatar-history {
+    width: 100%;
+	height: 28rem;
+	background-color: #261F1A ;
+	color: #dda21f !important;
+	border: none;
+	border-color: #595959;
+	
+}
+
+textArea.avatar-history:hover {
+
+	background-color: #302117;
+
+}
+
+
+
+textArea.avatar-history:focus {
+ 
+	border: none;
+	outline: 0;
+}
+
+.avatar-history-border:hover {
+    background: linear-gradient(to left, #593610 , #CB9717, #593610 );
+	padding: 1px;
+	border-radius: 3px;
+}
+
+.avatar-history-border {
+    background: linear-gradient(to left, #595959, #AFAFAF, #595959);
+	padding: 1px;
+	border-radius: 3px;
+}
+
+
+
+
+
+
+textArea.avatar-history:focus {
+	
+}
+
 

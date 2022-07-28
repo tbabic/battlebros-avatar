@@ -9,18 +9,7 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		var leftColumn = $('<div class="column" />');
 		this.mFourthPanel.append(leftColumn);
 		
-		// var row = $('<div class="row" />');
-		// leftColumn.append(row);
-		// var title = $('<div class="title title-font-big font-color-title">Company Name</div>');
-		// row.append(title);
-
-		// var inputLayout = $('<div class="l-input"/>');
-		// row.append(inputLayout);
-		// this.avatarName = inputLayout.createInput('Battle Brothers', 0, 32, 1, function (_input)
-		// {
-			// if(self.mStartButton !== null) self.mStartButton.enableButton(_input.getInputTextLength() >= 1);
-		// }, 'title-font-big font-bold font-color-brother-name'); 
-		// this.avatarName.setInputText('Battle Brothers');
+		
 		
 		
 
@@ -32,6 +21,33 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		this.mFourthPanel.append(rightColumn);
 		
 		this.createBackgroundContent(rightColumn);
+		
+		//AVATAR NAME
+		
+		var row = $('<div class="row" />');
+		rightColumn.append(row);
+		var title = $('<div class="title title-font-big font-color-title">Name:</div>');
+		row.append(title);
+
+		var inputLayout = $('<div class="l-input"/>');
+		row.append(inputLayout);
+		this.avatarName = inputLayout.createInput('Avatar', 0, 32, 1, undefined, 'title-font-big font-bold font-color-brother-name'); 
+		this.avatarName.setInputText('Avatar');
+		
+		//AVATAR BACKGROUND TEXT
+		
+		var row = $('<div class="row" />');
+		rightColumn.append(row);
+		var title = $('<div class="title title-font-big font-color-title">History:</div>');
+		row.append(title);
+
+		var inputLayout = $('<div class="l-input"/>');
+		row.append(inputLayout);
+		var outline = $('<div class="avatar-history-border"/>')
+		inputLayout.append(outline);
+		this.avatarHistory = $('<textArea class="avatar-history title-font-normal" />'); 
+		this.avatarHistory.text('Write your history here...');
+		outline.append(this.avatarHistory);
 	
 		
 	
@@ -116,6 +132,10 @@ NewCampaignMenuModule.prototype.avatarData = function(data) {
 		this.avatarSkills[skill].setValues(attr.avg, attr.min, attr.max);
 	}
 	this.backgroundImage.attr('src', Path.GFX + data.icon);
+	this.traitsModule.setTraitsCollection(data.traits);
+	this.avatarName.setInputText(data.characterName);
+	this.avatarHistory.text(data.characterHistory);
+
 	
 }
 
@@ -311,35 +331,9 @@ var PointsControl = function() {
 }
 
 NewCampaignMenuModule.prototype.createTraitsContent = function (parentDiv) {
-	var selft = this;
-	
-	var row = $('<div class="row" />');
-	parentDiv.append(row);
-	row.append($('<div class="title title-font-big font-color-title ">Traits: </label>'));
-	
-	var row = $('<div class="row" />');
-	parentDiv.append(row);
-	
-	
-	row.createImageButton(Path.GFX + Asset.BUTTON_PREVIOUS_BANNER, function ()
-	{
-		
-	}, 'avatar-arrow-button', 6);
-
-	row.createImageButton(Path.GFX + Asset.BUTTON_NEXT_BANNER, function ()
-	{
-		
-	}, 'avatar-arrow-button', 6);
-	
-	
-	this.trait1;
-	var trait1Right;
-	
-	
-	
-	
-	
+	this.traitsModule = new MultipleTraitsModule(parentDiv, this.pointsControl);
 }
+
 
 NewCampaignMenuModule.prototype.createBackgroundContent = function (parentDiv) {
 	
