@@ -30,6 +30,9 @@
 
 		o.getAvatarBackground <- function( selectedScenarioId )
 		{
+			if (!(selectedScenarioId in this.m.avatarBackgrounds)) {
+				return "sellsword_background";
+			}
 			local background = this.m.avatarBackgrounds[selectedScenarioId];
 			if (background == null) {
 				return "sellsword_background";
@@ -103,6 +106,41 @@
 
 			}
 			
+			local traitCosts = {};
+			traitCosts["trait.eagle_eyes"] <- 10;
+			traitCosts["trait.tough"] <- 40;
+			traitCosts["trait.strong"] <- 40;
+			traitCosts["trait.quick"] <- 30;
+			traitCosts["trait.fearless"] <- 40;
+			traitCosts["trait.bright"] <- 5;
+			traitCosts["trait.drunkard"] <- 25;
+			traitCosts["trait.determined"] <- 30;
+			traitCosts["trait.deathwish"] <- 20;
+			traitCosts["trait.optimist"] <- 10;
+			traitCosts["trait.paranoid"] <- 30;
+			traitCosts["trait.brave"] <- 20;
+			traitCosts["trait.dexterous"] <- 30;
+			traitCosts["trait.sure_footing"] <- 30;
+			traitCosts["trait.iron_lungs"] <- 40;
+			traitCosts["trait.spartan"] <- 1;
+			traitCosts["trait.athletic"] <- 10;
+			traitCosts["trait.iron_jaw"] <- 15;
+			traitCosts["trait.survivor"] <- 20;
+			traitCosts["trait.impatient"] <- 5;
+			traitCosts["trait.swift"] <- 15;
+			traitCosts["trait.night_owl"] <- 8;
+			traitCosts["trait.huge"] <- 25;
+			traitCosts["trait.lucky"] <- 10;
+			traitCosts["trait.weasel"] <- 10;
+			traitCosts["trait.teamplayer"] <- 25;
+			traitCosts["trait.hate_greenskins"] <- 15;
+			traitCosts["trait.hate_undead"] <- 15;
+			traitCosts["trait.hate_beasts"] <- 15;
+			
+			
+			
+
+			
 			local traits = [];
 			
 			for( local i = 0; i < this.Const.CharacterTraits.len(); i = ++i )
@@ -110,12 +148,14 @@
 				local traitArray = this.Const.CharacterTraits[i];
 				if (!backgroundObj.isExcluded(traitArray[0])) {
 					local trait = this.new(traitArray[1]);
+					local traitCost = 0;
+					
 					traits.push({
 						id = trait.m.ID,
 						name = trait.m.Name,
 						icon = trait.m.Icon,
 						tooltip = trait.getTooltip(),
-						cost = 25
+						cost = traitCost
 					});
 				}
 			}
