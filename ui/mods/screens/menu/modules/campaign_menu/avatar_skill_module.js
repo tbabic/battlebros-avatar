@@ -29,7 +29,7 @@ AvatarSkillModule.prototype.initialize = function(_parentDiv) {
 
 	var row = $('<div class="row"/>');
 	_parentDiv.append(row);
-	row.bindTooltip({ contentType: 'ui-element', elementId: this.config.TooltipId });
+	
 
 	var image = $('<img/>');
 	image.attr('src', this.config.IconPath);
@@ -43,8 +43,9 @@ AvatarSkillModule.prototype.initialize = function(_parentDiv) {
 	var progressbarLayout = $('<div class="l-progressbar-container"/>');
 	row.append(progressbarLayout);
 	this.progressbar = progressbarLayout.createProgressbar(true, this.config.StyleName);
+	this.progressbar.bindTooltip({ contentType: 'ui-element', elementId: this.config.TooltipId });
 	
-	this.progressbar.changeProgressbarNormalWidth(this.value, this.maxValue, true);
+	this.progressbar.changeProgressbarNormalWidth(this.value-this.minValue, this.maxValue-this.minValue, true);
 	this.progressbar.changeProgressbarLabel('' + this.value);
 	
 
@@ -93,7 +94,7 @@ AvatarSkillModule.prototype.increaseSkill = function() {
 	if (this.value >= this.maxValue) {
 		return;
 	}
-	let cost = this.skillIncreaseCost();
+	var cost = this.skillIncreaseCost();
 	if (cost > this.pointsControl.availablePoints()) {
 		return;
 	}
@@ -107,7 +108,7 @@ AvatarSkillModule.prototype.decreaseSkill = function() {
 	if (this.value <= this.minValue) {
 		return;
 	}
-	let cost = this.skillDecreaseCost();
+	var cost = this.skillDecreaseCost();
 	this.value--;
 	this.pointsControl.changePoints(-cost);
 	this.visualizeSkillValue();
@@ -116,7 +117,7 @@ AvatarSkillModule.prototype.decreaseSkill = function() {
 
 
 AvatarSkillModule.prototype.increaseTalents = function() {
-	if (this.talents >= 3 || this.pointsControl.availableTalents() <= 0) {
+	if (this.talents >= 3 || this.pointsControl.availabvaralents() <= 0) {
 		return;
 	}
 	
@@ -141,10 +142,10 @@ AvatarSkillModule.prototype.visualize = function() {
 }
 
 AvatarSkillModule.prototype.visualizeSkillValue = function() {
-	this.progressbar.changeProgressbarNormalWidth(this.value, this.maxValue, true);
+	this.progressbar.changeProgressbarNormalWidth(this.value-this.minValue, this.maxValue-this.minValue, true);
 	this.progressbar.changeProgressbarLabel('' + this.value);
 	
-	let increaseCost = this.skillIncreaseCost();
+	var increaseCost = this.skillIncreaseCost();
 	if (this.value >= this.maxValue || increaseCost > this.pointsControl.availablePoints()) {
 		this.increaseSkillButton.enableButton(false);
 	} else {
@@ -162,7 +163,7 @@ AvatarSkillModule.prototype.visualizeSkillValue = function() {
 AvatarSkillModule.prototype.visualizeTalents = function() {
 	this.talentStars.attr("src",Path.GFX + 'ui/icons/talent_' + this.talents + '.png')
 	
-	if (this.talents >= 3 || this.pointsControl.availableTalents() <= 0) {
+	if (this.talents >= 3 || this.pointsControl.availabvaralents() <= 0) {
 		this.increaseTalentButton.enableButton(false);
 	} else {
 		this.increaseTalentButton.enableButton(true);
@@ -177,11 +178,11 @@ AvatarSkillModule.prototype.visualizeTalents = function() {
 
 
 AvatarSkillModule.prototype.skillIncreaseCost = function() {
-	let baseCost = this.pointsWeight;
-	let currentRanks = this.value - this.defaultValue;
-	let extraCost = Math.ceil((currentRanks+1)/2) -1;
+	var baseCost = this.pointsWeight;
+	var currentRanks = this.value - this.defaultValue;
+	var extraCost = Math.ceil((currentRanks+1)/2) -1;
 	
-	let cost = Math.max(baseCost, baseCost+extraCost);
+	var cost = Math.max(baseCost, baseCost+extraCost);
 	return cost;
 	
 }
@@ -189,11 +190,11 @@ AvatarSkillModule.prototype.skillIncreaseCost = function() {
 AvatarSkillModule.prototype.skillDecreaseCost = function() {
 	
 	
-	let baseCost = this.pointsWeight;
-	let currentRanks = this.value - this.defaultValue;
-	let extraCost = Math.ceil((currentRanks)/2) -1;
+	var baseCost = this.pointsWeight;
+	var currentRanks = this.value - this.defaultValue;
+	var extraCost = Math.ceil((currentRanks)/2) -1;
 	
-	let cost = Math.max(baseCost, baseCost+extraCost);
+	var cost = Math.max(baseCost, baseCost+extraCost);
 	return cost;
 }
 

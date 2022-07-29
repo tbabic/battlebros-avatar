@@ -2,6 +2,8 @@
 ::mods_queue(null, null, function()
 {
 	::mods_registerCSS("screens/menu/modules/campaign_menu/avatar_menu.css");
+	::mods_registerJS("screens/menu/modules/campaign_menu/avatar_skill_module.js");
+	::mods_registerJS("screens/menu/modules/campaign_menu/traits_module.js");
     ::mods_registerJS("screens/menu/modules/campaign_menu/new_campaign_menu_module.js");
 	
 	::mods_hookNewObject("scenarios/scenario_manager", function(o) {
@@ -83,6 +85,14 @@
 			
 			local attributes = {};
 			local defaultAttributes = {};
+			
+			local name = backgroundObj.m.Names[this.Math.rand(0, backgroundObj.m.Names.len() - 1)];
+			local vars = [];
+			vars.push([
+				"name",
+				name
+			]);
+			local description = this.buildTextFromTemplate(backgroundObj.onBuildDescription(), [["name",name], ["fullname", name]]);
 
 			foreach(key, value in a)
 			{
@@ -92,6 +102,25 @@
 				attributes[key].avg <- this.Math.floor((attributes[key].min + attributes[key].max)/2);
 
 			}
+			
+			local traits = [];
+			
+			for( local i = 0; i < this.Const.CharacterTraits.len(); i = ++i )
+			{
+				local traitArray = this.Const.CharacterTraits[i];
+				if (!backgroundObj.isExcluded(traitArray[0])) {
+					local trait = this.new(traitArray[1]);
+					traits.push({
+						id = trait.m.ID,
+						name = trait.m.Name,
+						icon = trait.m.Icon,
+						tooltip = trait.getTooltip(),
+						cost = 25
+					});
+				}
+			}
+			
+	
 
 			local backgroundData = {
 				id = backgroundObj.m.ID,
@@ -99,6 +128,9 @@
 				icon = backgroundObj.m.Icon,
 				//description = this.buildTextFromTemplate(this.onBuildDescription(), vars)
 				attributes = attributes,
+				characterName = name,
+				characterHistory = description,
+				traits = traits,
 				
 			}
 			this.m.JSHandle.asyncCall("avatarData", backgroundData)

@@ -2,7 +2,7 @@ var NONE_TRAIT = {
 	name : "None"
 }
 
-var MultipleTraitsModule = function(parentDiv, pointsControl) {
+var MultipvarraitsModule = function(parentDiv, pointsControl) {
 	var row = $('<div class="row" />');
 	parentDiv.append(row);
 	row.append($('<div class="title-font-big font-color-title ">Traits: </label>'));
@@ -21,7 +21,7 @@ var MultipleTraitsModule = function(parentDiv, pointsControl) {
 	}
 	
 	this.refreshAllButtons = function() {
-		this.getTraitModules().forEach(t => t.refreshButtons());
+		this.getTraitModules().forEach(function(t) { t.refreshButtons(); });
 	}
 }
 
@@ -61,8 +61,9 @@ TraitModule.prototype.refresh = function() {
 	
 	this.display.empty();
 	if (this.selectedTrait.icon != null) {
-		let image = $('<img class="trait-img"/>');
+		var image = $('<img class="trait-img"/>');
 		image.attr('src', Path.GFX + this.selectedTrait.icon);
+		image.bindTooltip({ contentType: 'verbatim', tooltip : this.selectedTrait.tooltip })
 		this.display.append(image);
 	} else {
 		this.display.text(this.selectedTrait.name);
@@ -74,14 +75,14 @@ TraitModule.prototype.refresh = function() {
 }
 
 TraitModule.prototype.refreshButtons = function() {
-	let anyAvailable = this.anyAvailableTrait();
+	var anyAvailable = this.anyAvailabvarrait();
 	this.leftButton.enableButton(anyAvailable);
 	this.rightButton.enableButton(anyAvailable);
 }
 
 TraitModule.prototype.getNextTrait = function(direction) {
-	let currentIndex = this.parentModule.traits.indexOf(this.selectedTrait);
-	let newTrait = this.selectedTrait;
+	var currentIndex = this.parentModule.traits.indexOf(this.selectedTrait);
+	var newTrait = this.selectedTrait;
 	do {
 		currentIndex += +direction; //-1 or +1
 		currentIndex = (this.parentModule.traits.length + currentIndex) % this.parentModule.traits.length;
@@ -92,7 +93,7 @@ TraitModule.prototype.getNextTrait = function(direction) {
 }
 
 TraitModule.prototype.chooseNextTrait = function(direction) {
-	let trait = this.getNextTrait(direction);
+	var trait = this.getNextTrait(direction);
 	if (trait != this.selectedTrait) {
 		this.selectedTrait = trait;
 		this.refresh();
@@ -100,7 +101,7 @@ TraitModule.prototype.chooseNextTrait = function(direction) {
 	
 }
 
-TraitModule.prototype.anyAvailableTrait = function() {
+TraitModule.prototype.anyAvailabvarrait = function() {
 	return this.getNextTrait(+1) != this.selectedTrait;
 }
 
@@ -108,9 +109,12 @@ TraitModule.prototype.isTraitAvailable = function(trait) {
 	if (trait == NONE_TRAIT) {
 		return true;
 	}
-	let selectedTraits = this.parentModule.getTraitModules()
-				.filter(module => module != this && module.selectedTrait != NONE_TRAIT)
-				.map(module => module.selectedTrait);
+	var self = this;
+	var selectedTraits = this.parentModule.getTraitModules()
+				.filter(function (module) { 
+					return module != self && module.selectedTrait != NONE_TRAIT;
+				})
+				.map(function(module) {return module.selectedTrait;} );
 				
 	return selectedTraits.indexOf(trait) == -1;
 }

@@ -1,15 +1,19 @@
 .new-campaign-menu-module .row > .l-progressbar-container
 {
-
+	top: -0.7rem;
     width: 12.7rem;
     height: 2.2rem;
+    position: relative;
 	display: inline-block;
+	margin-bottom: -0.7rem;
+    
 }
 
 .new-campaign-menu-module .l-progressbar-container > .ui-control.progressbar.has-frame {
     
     background-size: 12.7rem 2.2rem;
     background-repeat: no-repeat;
+	overflow: visible;
 }
 
 .new-campaign-menu-module .row > img
@@ -130,33 +134,9 @@
 
 }
 
-textArea.avatar-history2 {
-	width: 100%;
-	height: 25rem;
-	
-	
-	border-width: 1px;
-	border-radius: 16px;
-	border-image-slice: 1;
-	
-	background-color: rgb(39, 31, 26);
-	
-	color: #dda21f !important;
-}
-
-textArea.avatar-history2::after {
-	
-	background: linear-gradient(to left, #272727, #AFAFAF, #272727);
-	position: absolute;
-    top: -1px; bottom: -1px;
-    left: -1px; right: -1px;
-    content: '';
-    z-index: -1;
-    border-radius: 3px;
-}
 
 
-textArea.avatar-history {
+input.avatar-history {
     width: 100%;
 	height: 28rem;
 	background-color: #261F1A ;
@@ -164,27 +144,41 @@ textArea.avatar-history {
 	border: none;
 	border-color: #595959;
 	
+	background-image: none;
+    word-break: break-word;
+	
+	
+	font-size: 14px;
 }
 
-textArea.avatar-history:hover {
+input.avatar-history:hover {
 
 	background-color: #302117;
+	background-image: none;
 
 }
 
 
 
-textArea.avatar-history:focus {
+input.avatar-history:focus {
  
 	border: none;
 	outline: 0;
+	background-image: none;
+	background-color: #302117;
 }
 
+
+
+
+.avatar-history-border.focused,
 .avatar-history-border:hover {
     background: linear-gradient(to left, #593610 , #CB9717, #593610 );
 	padding: 1px;
 	border-radius: 3px;
 }
+
+
 
 .avatar-history-border {
     background: linear-gradient(to left, #595959, #AFAFAF, #595959);
@@ -193,12 +187,63 @@ textArea.avatar-history:focus {
 }
 
 
-
-
-
-
-textArea.avatar-history:focus {
+textarea.avatar-history {
+    width: 100%;
+	height: 28rem;
+	background-color: #261F1A ;
+	color: #dda21f !important;
+	border: none;
+	border-color: #595959;
 	
+	background-image: none;
+	font-size: 14px;
 }
+
+textarea.avatar-history:hover {
+
+	background-color: #302117;
+	background-image: none;
+
+}
+
+
+
+textarea.avatar-history:focus {
+ 
+	border: none;
+	outline: 0;
+	background-image: none;
+	background-color: #302117;
+}
+
+div.avatar-history {
+    width: 100%;
+	height: 28rem;
+	background-color: #261F1A ;
+	color: #dda21f !important;
+	border: none;
+	border-color: #595959;
+	
+	background-image: none;
+	font-size: 14px;
+}
+
+div.avatar-history:hover {
+
+	background-color: #302117;
+	background-image: none;
+
+}
+
+
+
+div.avatar-history:focus {
+ 
+	border: none;
+	outline: 0;
+	background-image: none;
+	background-color: #302117;
+}
+
 
 

@@ -26,7 +26,7 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		
 		var row = $('<div class="row" />');
 		rightColumn.append(row);
-		var title = $('<div class="title title-font-big font-color-title">Name:</div>');
+		var title = $('<div class="title-font-big font-color-title">Name:</div>');
 		row.append(title);
 
 		var inputLayout = $('<div class="l-input"/>');
@@ -38,16 +38,38 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		
 		var row = $('<div class="row" />');
 		rightColumn.append(row);
-		var title = $('<div class="title title-font-big font-color-title">History:</div>');
+		var title = $('<div class="title-font-big font-color-title">History:</div>');
 		row.append(title);
 
 		var inputLayout = $('<div class="l-input"/>');
 		row.append(inputLayout);
 		var outline = $('<div class="avatar-history-border"/>')
 		inputLayout.append(outline);
-		this.avatarHistory = $('<textArea class="avatar-history title-font-normal" />'); 
-		this.avatarHistory.text('Write your history here...');
+		this.avatarHistory = $('<input class="avatar-history title-font-normal"  ></input>'); 
+		this.avatarHistory.val('Write your history here...');
 		outline.append(this.avatarHistory);
+		this.avatarHistory.focus(function() {
+			outline.addClass("focused");
+		});
+		this.avatarHistory.focusout(function() {
+			outline.removeClass("focused");
+		});
+		this.avatarHistoryPasteEvent = false;
+		this.avatarHistory.on("paste",function(e) {
+			var text = e.originalEvent.clipboardData.getData('Text');
+			console.log(text);
+			e.preventDefault();
+			if(self.avatarHistoryPasteEvent) {
+				return;
+			}
+			self.avatarHistoryPasteEvent = true;
+			event = e;
+			setTimeout(function() {
+				self.avatarHistory.val(event.originalEvent.clipboardData.getData('Text'));
+				self.avatarHistoryPasteEvent = false;
+			}, 1000);
+	   });
+
 	
 		
 	
@@ -128,13 +150,13 @@ NewCampaignMenuModule.prototype.avatarData = function(data) {
 	//TODO: data from backend about background for selected origin
 	this.backgroundData = data;
 	for(skill in data.attributes) {
-		let attr = data.attributes[skill];
+		var attr = data.attributes[skill];
 		this.avatarSkills[skill].setValues(attr.avg, attr.min, attr.max);
 	}
 	this.backgroundImage.attr('src', Path.GFX + data.icon);
 	this.traitsModule.setTraitsCollection(data.traits);
 	this.avatarName.setInputText(data.characterName);
-	this.avatarHistory.text(data.characterHistory);
+	this.avatarHistory.val(data.characterHistory);
 
 	
 }
@@ -298,7 +320,7 @@ var PointsControl = function() {
 		
 		var row = $('<div class="row" />');
 		parentDiv.append(row);
-		var title = $('<div class="title title-font-big font-color-title"></div>');
+		var title = $('<div class="title-font-big font-color-title"></div>');
 		row.append(title);
 		this.pointsDiv = $('<label style="margin-right: 2rem"/>');
 		this.changePoints(0);
@@ -325,13 +347,13 @@ var PointsControl = function() {
 		this.talentsDiv.text('Talents: ' + this.currentTalents + '/'+ this.totalTalents)
 	};
 	
-	this.availableTalents = function() {
+	this.availabvaralents = function() {
 		return this.totalTalents - this.currentTalents;
 	};
 }
 
 NewCampaignMenuModule.prototype.createTraitsContent = function (parentDiv) {
-	this.traitsModule = new MultipleTraitsModule(parentDiv, this.pointsControl);
+	this.traitsModule = new MultipvarraitsModule(parentDiv, this.pointsControl);
 }
 
 
