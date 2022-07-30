@@ -1,30 +1,18 @@
-var AvatarSkillModule = function(name, skillConfig, pointsControl) {
+var AvatarSkillModule = function(_parentDiv, name, skillConfig, pointsControl) {
 	this.name = name;
 	this.config = skillConfig;
 	this.pointsControl = pointsControl;
 	
-	this.maxDefaultValue = skillConfig.defaultMax;
-	this.minDefaultValue = skillConfig.defaultMin;
-	this.defaultValue = skillConfig.defaultValue;
+
 	
-	this.maxValue = skillConfig.defaultMax;
-	this.minValue = skillConfig.defaultMin;
-	this.value = skillConfig.defaultValue;
+	this.maxValue = 100;
+	this.minValue = 0;
+	this.value = 50;
+	this.base = 50;
 	this.talents = 0;
-	this.pointsWeight = skillConfig.pointsWeight;
+	this.pointsWeight = 4;
 	
-	
-	
-	
-
-}
-
-AvatarSkillModule.prototype.initialize = function(_parentDiv) {
-	
-	
-
-	
-    var self = this;
+	var self = this;
 
 
 	var row = $('<div class="row"/>');
@@ -78,22 +66,22 @@ AvatarSkillModule.prototype.initialize = function(_parentDiv) {
 	this.increaseTalentButton = buttonLayout.createCustomButton(inButtonLayout, function() {
 		self.increaseTalents();
 	},'next-banner-button', 8);
-
 	
 	
+	
+
 }
 
-AvatarSkillModule.prototype.setDefaultValues = function(value, min, max) {
-	this.maxDefaultValue = max;
-	this.minDefaultValue = min;
-	this.defaultValue = value;
-	this.visualizeSkillValue();
+AvatarSkillModule.prototype.initialize = function(_parentDiv) {
+
 }
 
-AvatarSkillModule.prototype.setValues = function(value, min, max) {
-	this.value = value;
-	this.minValue = min;
-	this.maxValue = max;
+AvatarSkillModule.prototype.setValues = function(value, min, max, base, pointsWeight) {
+	this.value = +value;
+	this.minValue = +min;
+	this.maxValue = +max;
+	this.base = +base;
+	this.pointsWeight = +pointsWeight;
 	this.visualizeSkillValue();
 }
 
@@ -124,7 +112,7 @@ AvatarSkillModule.prototype.decreaseSkill = function() {
 
 
 AvatarSkillModule.prototype.increaseTalents = function() {
-	if (this.talents >= 3 || this.pointsControl.availabvaralents() <= 0) {
+	if (this.talents >= 3 || this.pointsControl.availableTalents() <= 0) {
 		return;
 	}
 	
@@ -170,7 +158,7 @@ AvatarSkillModule.prototype.visualizeSkillValue = function() {
 AvatarSkillModule.prototype.visualizeTalents = function() {
 	this.talentStars.attr("src",Path.GFX + 'ui/icons/talent_' + this.talents + '.png')
 	
-	if (this.talents >= 3 || this.pointsControl.availabvaralents() <= 0) {
+	if (this.talents >= 3 || this.pointsControl.availableTalents() <= 0) {
 		this.increaseTalentButton.enableButton(false);
 	} else {
 		this.increaseTalentButton.enableButton(true);
@@ -186,7 +174,7 @@ AvatarSkillModule.prototype.visualizeTalents = function() {
 
 AvatarSkillModule.prototype.skillIncreaseCost = function() {
 	var baseCost = this.pointsWeight;
-	var currentRanks = this.value - this.defaultValue;
+	var currentRanks = this.value - this.base;
 	var extraCost = Math.ceil((currentRanks+1)/2) -1;
 	
 	var cost = Math.max(baseCost, baseCost+extraCost);
@@ -198,7 +186,7 @@ AvatarSkillModule.prototype.skillDecreaseCost = function() {
 	
 	
 	var baseCost = this.pointsWeight;
-	var currentRanks = this.value - this.defaultValue;
+	var currentRanks = this.value - this.base;
 	var extraCost = Math.ceil((currentRanks)/2) -1;
 	
 	var cost = Math.max(baseCost, baseCost+extraCost);

@@ -1,8 +1,9 @@
 var NONE_TRAIT = {
-	name : "None"
+	name : "None",
+	cost : 0,
 }
 
-var MultipvarraitsModule = function(parentDiv, pointsControl) {
+var MultipleTraitsModule = function(parentDiv, pointsControl) {
 	var row = $('<div class="row" />');
 	parentDiv.append(row);
 	row.append($('<div class="title-font-big font-color-title ">Traits: </label>'));
@@ -75,7 +76,7 @@ TraitModule.prototype.refresh = function() {
 }
 
 TraitModule.prototype.refreshButtons = function() {
-	var anyAvailable = this.anyAvailabvarrait();
+	var anyAvailable = this.anyAvailableTrait();
 	this.leftButton.enableButton(anyAvailable);
 	this.rightButton.enableButton(anyAvailable);
 }
@@ -95,13 +96,15 @@ TraitModule.prototype.getNextTrait = function(direction) {
 TraitModule.prototype.chooseNextTrait = function(direction) {
 	var trait = this.getNextTrait(direction);
 	if (trait != this.selectedTrait) {
+		var cost = trait.cost - this.selectedTrait.cost;
 		this.selectedTrait = trait;
 		this.refresh();
+		this.pointsControl.changePoints(cost);
 	}
 	
 }
 
-TraitModule.prototype.anyAvailabvarrait = function() {
+TraitModule.prototype.anyAvailableTrait = function() {
 	return this.getNextTrait(+1) != this.selectedTrait;
 }
 
@@ -117,4 +120,8 @@ TraitModule.prototype.isTraitAvailable = function(trait) {
 				.map(function(module) {return module.selectedTrait;} );
 				
 	return selectedTraits.indexOf(trait) == -1;
+}
+
+TraitModule.prototype.isSelected = function() {
+	return this.selectedTrait != NONE_TRAIT;
 }

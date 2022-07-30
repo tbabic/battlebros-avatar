@@ -134,6 +134,16 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
     });
 }
 
+NewCampaignMenuModule.prototype.notifyBackendStartButtonPressed = function ()
+{
+	if (this.mSQHandle !== null)
+	{
+		var settings = this.collectSettings();
+		settings["avatarSettings"] = this.collectAvatarSettings();
+		SQ.call(this.mSQHandle, 'onStartButtonPressed', settings);
+	}
+};
+
 NewCampaignMenuModule.prototype.notifyBackendOriginSelected = function() {
 	if (this.mSQHandle !== null)
 	{
@@ -146,17 +156,37 @@ NewCampaignMenuModule.prototype.notifyBackendOriginSelected = function() {
 	}
 }
 
-NewCampaignMenuModule.prototype.avatarData = function(data) {
-	//TODO: data from backend about background for selected origin
-	this.backgroundData = data;
-	for(skill in data.attributes) {
-		var attr = data.attributes[skill];
-		this.avatarSkills[skill].setValues(attr.avg, attr.min, attr.max);
+NewCampaignMenuModule.prototype.avatarSettings = function(settings) {
+	
+	
+	this.setAvatarSettings(settings.global);
+	this.setAvatarSettings(settings.scenario);
+
+	
+}
+
+NewCampaignMenuModule.prototype.setAvatarSettings = function(settings) {
+	
+	
+
+	
+	for(skill in settings.attributes) {
+		var attr = settings.attributes[skill];
+		this.avatarSkills[skill].setValues(attr.value, attr.min, attr.max, attr.baseValue, attr.pointsWeight);
 	}
-	this.backgroundImage.attr('src', Path.GFX + data.icon);
-	this.traitsModule.setTraitsCollection(data.traits);
-	this.avatarName.setInputText(data.characterName);
-	this.avatarHistory.val(data.characterHistory);
+	
+	this.traitsModule.setTraitsCollection(settings.traits);
+	
+	this.background = settings.background;
+	this.backgroundImage.attr('src', Path.GFX + settings.background.icon);
+	
+	this.avatarName.setInputText(settings.background.characterName);
+	this.avatarHistory.val(settings.background.characterHistory);
+	this.pointsControl.totalPoints = settings.totalPoints;
+	this.pointsControl.changePoints(0);
+	this.pointsControl.totalTalents = settings.totalTalents;
+	this.pointsControl.changeTalents(0);
+	
 
 	
 }
@@ -176,10 +206,6 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
             ProgressbarValueIdentifierMax: ProgressbarValueIdentifier.HitpointsMax,
             StatValueIdentifier: CharacterScreenIdentifier.Entity.Character.LevelUp.HitpointsIncrease,
 			TalentIdentifier: 'hitpointsTalent',
-			defaultMin : 50,
-			defaultMax : 60,
-			defaultValue: 55,
-			pointsWeight: 4
         },
 
 		Stamina:
@@ -191,10 +217,6 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
             ProgressbarValueIdentifierMax: ProgressbarValueIdentifier.FatigueMax,
             StatValueIdentifier: CharacterScreenIdentifier.Entity.Character.LevelUp.FatigueIncrease,
             TalentIdentifier: 'fatigueTalent',
-			defaultMin : 90,
-			defaultMax : 100,
-			defaultValue: 95,
-			pointsWeight: 4
         },
 
 		Bravery:
@@ -206,10 +228,6 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
 			ProgressbarValueIdentifierMax: ProgressbarValueIdentifier.BraveryMax,
 			StatValueIdentifier: CharacterScreenIdentifier.Entity.Character.LevelUp.BraveryIncrease,
 			TalentIdentifier: 'braveryTalent',
-			defaultMin : 30,
-			defaultMax : 40,
-			defaultValue: 35,
-			pointsWeight: 4
 		},
 
 		Initiative:
@@ -221,10 +239,6 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
             ProgressbarValueIdentifierMax: ProgressbarValueIdentifier.InitiativeMax,
             StatValueIdentifier: CharacterScreenIdentifier.Entity.Character.LevelUp.InitiativeIncrease,
             TalentIdentifier: 'initiativeTalent',
-			defaultMin : 100,
-			defaultMax : 110,
-			defaultValue: 105,
-			pointsWeight: 3
         },
 		MeleeSkill:
 		{
@@ -235,10 +249,6 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
             ProgressbarValueIdentifierMax: ProgressbarValueIdentifier.MeleeSkillMax,
             StatValueIdentifier: CharacterScreenIdentifier.Entity.Character.LevelUp.MeleeSkillIncrease,
             TalentIdentifier: 'meleeSkillTalent',
-			defaultMin : 47,
-			defaultMax : 57,
-			defaultValue: 52,
-			pointsWeight: 6
         },
 
 		RangedSkill:
@@ -250,10 +260,6 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
             ProgressbarValueIdentifierMax: ProgressbarValueIdentifier.RangeSkillMax,
             StatValueIdentifier: CharacterScreenIdentifier.Entity.Character.LevelUp.RangeSkillIncrease,
             TalentIdentifier: 'rangeSkillTalent',
-			defaultMin : 32,
-			defaultMax : 42,
-			defaultValue: 37,
-			pointsWeight: 4
         },
 
 		MeleeDefense:
@@ -265,10 +271,6 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
             ProgressbarValueIdentifierMax: ProgressbarValueIdentifier.MeleeDefenseMax,
             StatValueIdentifier: CharacterScreenIdentifier.Entity.Character.LevelUp.MeleeDefenseIncrease,
             TalentIdentifier: 'meleeDefenseTalent',
-			defaultMin : 0,
-			defaultMax : 5,
-			defaultValue: 2,
-			pointsWeight: 6
         },
 
 		RangedDefense:
@@ -280,15 +282,11 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
             ProgressbarValueIdentifierMax: ProgressbarValueIdentifier.RangeDefenseMax,
             StatValueIdentifier: CharacterScreenIdentifier.Entity.Character.LevelUp.RangeDefenseIncrease,
             TalentIdentifier: 'rangeDefenseTalent',
-			defaultMin : 0,
-			defaultMax : 5,
-			defaultValue: 2,
-			pointsWeight: 4
         }
     };
     
-	this.pointsControl = new PointsControl();
-	this.pointsControl.initialize(parentDiv);
+	this.pointsControl = new PointsControl(parentDiv);
+	//this.pointsControl.initialize(parentDiv);
 	
 	
 	
@@ -296,8 +294,8 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
 
 	$.each(skillConfigs, function(_skill, _skillConfig)
 	{
-		self.avatarSkills[_skill] = new AvatarSkillModule(_skill, _skillConfig, self.pointsControl);
-		self.avatarSkills[_skill].initialize(parentDiv);
+		self.avatarSkills[_skill] = new AvatarSkillModule(parentDiv, _skill, _skillConfig, self.pointsControl);
+		//self.avatarSkills[_skill].initialize(parentDiv);
 	});
 
     
@@ -305,7 +303,7 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
     return;
 };
 
-var PointsControl = function() {
+var PointsControl = function(parentDiv) {
 	
 	this.totalPoints = 100;
 	this.currentPoints = 0;
@@ -313,29 +311,27 @@ var PointsControl = function() {
 	this.totalTalents = 9;
 	this.currentTalents = 0;
 	
+	var row = $('<div class="row" />');
+	parentDiv.append(row);
+	var title = $('<div class="title-font-big font-color-title"></div>');
+	row.append(title);
+	this.pointsDiv = $('<label style="margin-right: 2rem"/>');
+	this.pointsDiv.text('Points: ' + this.currentPoints + '/'+ this.totalPoints);
+	title.append(this.pointsDiv);
 	
+	
+	this.talentsDiv = $('<label/>');
+	this.talentsDiv.text('Talents: ' + this.currentTalents + '/'+ this.totalTalents);
+	title.append(this.talentsDiv);
 	
 	
 	this.initialize = function(parentDiv) {
-		
-		var row = $('<div class="row" />');
-		parentDiv.append(row);
-		var title = $('<div class="title-font-big font-color-title"></div>');
-		row.append(title);
-		this.pointsDiv = $('<label style="margin-right: 2rem"/>');
-		this.changePoints(0);
-		title.append(this.pointsDiv);
-		
-		
-		this.talentsDiv = $('<label/>');
-		this.changeTalents(0);
-		title.append(this.talentsDiv);
-		
+
 	};
 	
 	this.changePoints = function(value) {
-		this.currentPoints+=value;
-		this.pointsDiv.text('Points: ' + this.currentPoints + '/'+ this.totalPoints)
+		this.currentPoints+=+value;
+		this.pointsDiv.text('Points: ' + this.currentPoints + '/'+ this.totalPoints);
 	};
 	
 	this.availablePoints = function() {
@@ -344,16 +340,16 @@ var PointsControl = function() {
 	
 	this.changeTalents = function(value) {
 		this.currentTalents+=value;
-		this.talentsDiv.text('Talents: ' + this.currentTalents + '/'+ this.totalTalents)
+		this.talentsDiv.text('Talents: ' + this.currentTalents + '/'+ this.totalTalents);
 	};
 	
-	this.availabvaralents = function() {
+	this.availableTalents = function() {
 		return this.totalTalents - this.currentTalents;
 	};
 }
 
 NewCampaignMenuModule.prototype.createTraitsContent = function (parentDiv) {
-	this.traitsModule = new MultipvarraitsModule(parentDiv, this.pointsControl);
+	this.traitsModule = new MultipleTraitsModule(parentDiv, this.pointsControl);
 }
 
 
@@ -368,6 +364,35 @@ NewCampaignMenuModule.prototype.createBackgroundContent = function (parentDiv) {
 
 
 
+NewCampaignMenuModule.prototype.collectAvatarSettings = function(){
+	
+	var attributes = {};
+	for(attributeName in this.avatarSkills) {
+		attributes[attributeName] = {
+			value : this.avatarSkills[attributeName].value,
+			talents : this.avatarSkills[attributeName].talents
+		}
+	}
+	
+	var traits = [];
+	if (this.traitsModule.traitModule1.isSelected()) {
+		traits.push(this.traitsModule.traitModule1.selectedTrait);
+	}
+	if (this.traitsModule.traitModule2.isSelected()) {
+		traits.push(this.traitsModule.traitModule2.selectedTrait);
+	}
+	
+	var characterName = this.avatarName.getInputText();
+	var characterHistory = this.avatarHistory.val();
+	var avatarSettings = {
+		attributes : attributes,
+		background : this.background,
+		traits : traits,
+		characterName : characterName,
+		characterHistory : characterHistory
+	};
+	return avatarSettings;
+}
 
 
 Screens["MainMenuScreen"].mNewCampaignModule.avatarMod();
