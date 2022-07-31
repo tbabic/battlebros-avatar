@@ -134,6 +134,9 @@
 
 }
 
+.l-text-area {
+	width: 30rem;
+}
 
 
 input.avatar-history {
@@ -147,6 +150,7 @@ input.avatar-history {
 	background-image: none;
     word-break: break-word;
 	
+	text-align: justify;
 	
 	font-size: 14px;
 }
@@ -203,18 +207,23 @@ textarea.avatar-history:hover {
 
 	background-color: #302117;
 	background-image: none;
+	
 
 }
 
 
-
+.avatar-history-border.focused > textarea.avatar-history,
 textarea.avatar-history:focus {
  
 	border: none;
 	outline: 0;
 	background-image: none;
 	background-color: #302117;
+	
+
+	
 }
+
 
 div.avatar-history {
     width: 100%;
@@ -244,6 +253,5 @@ div.avatar-history:focus {
 	background-image: none;
 	background-color: #302117;
 }
-
 
 

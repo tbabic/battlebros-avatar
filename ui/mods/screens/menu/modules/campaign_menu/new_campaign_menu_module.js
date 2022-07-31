@@ -41,36 +41,20 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		var title = $('<div class="title-font-big font-color-title">History:</div>');
 		row.append(title);
 
-		var inputLayout = $('<div class="l-input"/>');
+		var inputLayout = $('<div class="l-text-area"/>');
 		row.append(inputLayout);
 		var outline = $('<div class="avatar-history-border"/>')
 		inputLayout.append(outline);
-		this.avatarHistory = $('<input class="avatar-history title-font-normal"  ></input>'); 
-		this.avatarHistory.val('Write your history here...');
-		outline.append(this.avatarHistory);
-		this.avatarHistory.focus(function() {
-			outline.addClass("focused");
-		});
-		this.avatarHistory.focusout(function() {
-			outline.removeClass("focused");
-		});
-		this.avatarHistoryPasteEvent = false;
-		this.avatarHistory.on("paste",function(e) {
-			var text = e.originalEvent.clipboardData.getData('Text');
-			console.log(text);
-			e.preventDefault();
-			if(self.avatarHistoryPasteEvent) {
-				return;
-			}
-			self.avatarHistoryPasteEvent = true;
-			event = e;
-			setTimeout(function() {
-				self.avatarHistory.val(event.originalEvent.clipboardData.getData('Text'));
-				self.avatarHistoryPasteEvent = false;
-			}, 1000);
-	   });
 
+		this.avatarHistory = outline.createInput('', 0, 1000, 1, undefined, 'avatar-history title-font-normal');
 	
+		
+		
+		
+	
+		
+		
+		
 		
 	
 	this.mStartButton.unbind("click");
@@ -134,12 +118,17 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
     });
 }
 
+
+
 NewCampaignMenuModule.prototype.notifyBackendStartButtonPressed = function ()
 {
 	if (this.mSQHandle !== null)
 	{
+		
 		var settings = this.collectSettings();
-		settings["avatarSettings"] = this.collectAvatarSettings();
+		settings.push(this.collectAvatarSettings());
+		
+		
 		SQ.call(this.mSQHandle, 'onStartButtonPressed', settings);
 	}
 };
@@ -181,11 +170,13 @@ NewCampaignMenuModule.prototype.setAvatarSettings = function(settings) {
 	this.backgroundImage.attr('src', Path.GFX + settings.background.icon);
 	
 	this.avatarName.setInputText(settings.background.characterName);
-	this.avatarHistory.val(settings.background.characterHistory);
-	this.pointsControl.totalPoints = settings.totalPoints;
-	this.pointsControl.changePoints(0);
-	this.pointsControl.totalTalents = settings.totalTalents;
-	this.pointsControl.changeTalents(0);
+	this.avatarHistory.setInputText(settings.background.characterHistory);
+	this.pointsModule.totalPoints = settings.totalPoints;
+	this.pointsModule.changePoints(0);
+	this.pointsModule.totalTalents = settings.totalTalents;
+	this.pointsModule.changeTalents(0);
+	this.pointsModule.currentPoints = 0;
+	this.traitsModule.resetTraits();
 	
 
 	
@@ -285,8 +276,8 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
         }
     };
     
-	this.pointsControl = new PointsControl(parentDiv);
-	//this.pointsControl.initialize(parentDiv);
+	this.pointsModule = new AvatarPointsModule(parentDiv);
+	//this.pointsModule.initialize(parentDiv);
 	
 	
 	
@@ -294,7 +285,7 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
 
 	$.each(skillConfigs, function(_skill, _skillConfig)
 	{
-		self.avatarSkills[_skill] = new AvatarSkillModule(parentDiv, _skill, _skillConfig, self.pointsControl);
+		self.avatarSkills[_skill] = new AvatarAttributesModule(parentDiv, _skill, _skillConfig, self.pointsModule);
 		//self.avatarSkills[_skill].initialize(parentDiv);
 	});
 
@@ -303,53 +294,10 @@ NewCampaignMenuModule.prototype.createSkillsContent = function (parentDiv)
     return;
 };
 
-var PointsControl = function(parentDiv) {
-	
-	this.totalPoints = 100;
-	this.currentPoints = 0;
-	
-	this.totalTalents = 9;
-	this.currentTalents = 0;
-	
-	var row = $('<div class="row" />');
-	parentDiv.append(row);
-	var title = $('<div class="title-font-big font-color-title"></div>');
-	row.append(title);
-	this.pointsDiv = $('<label style="margin-right: 2rem"/>');
-	this.pointsDiv.text('Points: ' + this.currentPoints + '/'+ this.totalPoints);
-	title.append(this.pointsDiv);
-	
-	
-	this.talentsDiv = $('<label/>');
-	this.talentsDiv.text('Talents: ' + this.currentTalents + '/'+ this.totalTalents);
-	title.append(this.talentsDiv);
-	
-	
-	this.initialize = function(parentDiv) {
 
-	};
-	
-	this.changePoints = function(value) {
-		this.currentPoints+=+value;
-		this.pointsDiv.text('Points: ' + this.currentPoints + '/'+ this.totalPoints);
-	};
-	
-	this.availablePoints = function() {
-		return this.totalPoints - this.currentPoints;
-	};
-	
-	this.changeTalents = function(value) {
-		this.currentTalents+=value;
-		this.talentsDiv.text('Talents: ' + this.currentTalents + '/'+ this.totalTalents);
-	};
-	
-	this.availableTalents = function() {
-		return this.totalTalents - this.currentTalents;
-	};
-}
 
 NewCampaignMenuModule.prototype.createTraitsContent = function (parentDiv) {
-	this.traitsModule = new MultipleTraitsModule(parentDiv, this.pointsControl);
+	this.traitsModule = new AvatarTraitsModule(parentDiv, this.pointsModule);
 }
 
 
@@ -383,7 +331,7 @@ NewCampaignMenuModule.prototype.collectAvatarSettings = function(){
 	}
 	
 	var characterName = this.avatarName.getInputText();
-	var characterHistory = this.avatarHistory.val();
+	var characterHistory = this.avatarHistory.getInputText();
 	var avatarSettings = {
 		attributes : attributes,
 		background : this.background,

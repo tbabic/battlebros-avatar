@@ -1,17 +1,18 @@
 var NONE_TRAIT = {
 	name : "None",
 	cost : 0,
+	excludes : [],
 }
 
-var MultipleTraitsModule = function(parentDiv, pointsControl) {
+var AvatarTraitsModule = function(parentDiv, pointsModule) {
 	var row = $('<div class="row" />');
 	parentDiv.append(row);
 	row.append($('<div class="title-font-big font-color-title ">Traits: </label>'));
 	this.traits = [NONE_TRAIT];
+	var self = this;
 	
-	
-	this.traitModule1 = new TraitModule(parentDiv, this, pointsControl);
-	this.traitModule2 = new TraitModule(parentDiv, this, pointsControl);
+	this.traitModule1 = new TraitModule(parentDiv, this, pointsModule);
+	this.traitModule2 = new TraitModule(parentDiv, this, pointsModule);
 	
 	this.getTraitModules = function() {
 		return [this.traitModule1, this.traitModule2];
@@ -24,13 +25,24 @@ var MultipleTraitsModule = function(parentDiv, pointsControl) {
 	this.refreshAllButtons = function() {
 		this.getTraitModules().forEach(function(t) { t.refreshButtons(); });
 	}
+	
+	this.resetTraits = function() {
+		this.traitModule1.selectedTrait = NONE_TRAIT;
+		this.traitModule1.refresh();
+		this.traitModule2.selectedTrait = NONE_TRAIT;
+		this.traitModule2.refresh();
+	}
+	
+	$(window).on("pointsModule.changed", function() {
+		self.refreshAllButtons();
+	})
 }
 
-var TraitModule = function(parentDiv, parentModule, pointsControl) {
+var TraitModule = function(parentDiv, parentModule, pointsModule) {
 	var self = this;
 	this.selectedTrait = NONE_TRAIT;
 	this.parentModule = parentModule;
-	this.pointsControl = pointsControl;
+	this.pointsModule = pointsModule;
 	
 	var row = $('<div class="row" />');
 	parentDiv.append(row);
@@ -52,7 +64,7 @@ var TraitModule = function(parentDiv, parentModule, pointsControl) {
 	}, 'avatar-arrow-button', 6);
 	
 	
-
+	
 
 	
 	
@@ -72,7 +84,7 @@ TraitModule.prototype.refresh = function() {
 	
 	
 	
-	this.parentModule.refreshAllButtons();
+	//this.parentModule.refreshAllButtons();
 }
 
 TraitModule.prototype.refreshButtons = function() {
@@ -99,7 +111,7 @@ TraitModule.prototype.chooseNextTrait = function(direction) {
 		var cost = trait.cost - this.selectedTrait.cost;
 		this.selectedTrait = trait;
 		this.refresh();
-		this.pointsControl.changePoints(cost);
+		this.pointsModule.changePoints(cost);
 	}
 	
 }
@@ -112,14 +124,35 @@ TraitModule.prototype.isTraitAvailable = function(trait) {
 	if (trait == NONE_TRAIT) {
 		return true;
 	}
+	if ((trait.cost - this.selectedTrait.cost) > this.pointsModule.availablePoints()) {
+		return false;
+	}
+	
 	var self = this;
+	// find traits selected in other modules
 	var selectedTraits = this.parentModule.getTraitModules()
 				.filter(function (module) { 
 					return module != self && module.selectedTrait != NONE_TRAIT;
 				})
 				.map(function(module) {return module.selectedTrait;} );
-				
-	return selectedTraits.indexOf(trait) == -1;
+	
+	// check if trait belongs to alrady selected traits
+	if (selectedTraits.indexOf(trait) != -1) {
+		return false;
+	}
+	
+	// check if traits are excluding
+	for (var i = 0; i < selectedTraits.length; i++) {
+		if (selectedTraits[i].excluded != null && selectedTraits[i].excluded.indexOf(trait.id) != -1) {
+			return false;
+		}
+		
+		if(trait.excluded != null && trait.excluded.indexOf(selectedTraits[i].id) != -1) {
+			return false;
+		}
+	}
+	
+	return true;
 }
 
 TraitModule.prototype.isSelected = function() {

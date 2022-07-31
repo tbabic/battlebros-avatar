@@ -37,6 +37,7 @@ gt.Const.Avatar.ScenarioBackgrounds["scenario.gladiators"] <- {
 gt.Const.Avatar.ScenarioBackgrounds["scenario.lone_wolf"] <- { 
 	Background = "hedge_knight_background",
 	Description = "A wandering hedge knight, you were a veteran of jousting and sparring tournaments. You were also a veteran of victory. Tis a scary thought for many, but if it were anything at all that turned your eye toward mercenary work it was boredom. Outwardly you state it is for the coin, but a part of you knows it\'s also for the company."
+	StartingLevel = 4,
 };
 gt.Const.Avatar.ScenarioBackgrounds["scenario.manhunters"] <- { 
 	Background = "manhunter_background",
@@ -53,17 +54,18 @@ gt.Const.Avatar.ScenarioBackgrounds["scenario.paladins"] <- {
 gt.Const.Avatar.ScenarioBackgrounds["scenario.raiders"] <- { 
 	Background = "barbarian_background",
 	Description = "For all your adult life you\'ve been raiding and pillaging in these lands. But with the local peasantry poor as mice, you may want to finally expand into the profitable field of mercenary work."
+	StartingLevel = 3,
 };
 gt.Const.Avatar.ScenarioBackgrounds["scenario.rangers"] <- { 
 	Background = "hunter_background",
 	Description = "For years you\'ve made a decent living by poaching in the local woods, evading your lord\'s men by being quick on your feet. But pickings have become slimmer and slimmer, and you\'re faced with a decision - how to make a living when all you know is how to use a bow?"
 };
 gt.Const.Avatar.ScenarioBackgrounds["scenario.southern_quickstart"] <- { 
-	Background = "sellsword_background",
+	Background = "companion_ranged_southern_background",
 	Description = "You and your small band of mercenaries have done the dirty work of small-time merchants for years, yet you\'re barely a step above brigands. You want to be bigger than that. You want it all. And the Gilder will reveal to you the way."
 };
 gt.Const.Avatar.ScenarioBackgrounds["scenario.trader"] <- { 
-	Background = "caravan_hand_background",
+	Background = "peddler_background",
 	Description = "You\'re running a small trading caravan and have most of your crowns invested into trading goods. But the roads have become dangerous - brigands and greenskins lay in ambush, and there\'s rumors of even worse things out there."
 };
 gt.Const.Avatar.ScenarioBackgrounds["scenario.tutorial"] <- { 

@@ -63,6 +63,7 @@ this.avatar_manager <- {
 			fileName = "sellsword_background",
 			characterName = "Sigurd",
 			characterHistory = "Write your history here...",
+			startingLevel = 1
 		};
 		
 		this.m.globalSettings.traits <- getTraitSettingsForBackground(defaultBackground);
@@ -83,6 +84,18 @@ this.avatar_manager <- {
 		return this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId].Background;
 	}
 	
+	function getBackgroundStartingLevel( _selectedScenarioId )
+	{
+		if (!(_selectedScenarioId in this.Const.Avatar.ScenarioBackgrounds)) {
+			return "sellsword_background";
+		}
+		if ("StartingLevel" in this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId]) {
+			return this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId].StartingLevel;
+		}
+		return 1;
+		
+	}
+	
 	function getBackgroundDescription( _selectedScenarioId )
 	{
 		if (!(_selectedScenarioId in this.Const.Avatar.ScenarioBackgrounds)) {
@@ -98,7 +111,7 @@ this.avatar_manager <- {
 		{
 			local traitArray = this.Const.CharacterTraits[i];
 			if (!_background.isExcluded(traitArray[0])) {
-				local trait = this.new(traitArray[0]);
+				local trait = this.new(traitArray[1]);
 				local traitCost = 0;
 				if (trait.m.ID in this.Const.Avatar.TraitCosts) {
 					traitCost = this.Const.Avatar.TraitCosts[trait.m.ID];
@@ -109,7 +122,7 @@ this.avatar_manager <- {
 					id = trait.m.ID,
 					name = trait.m.Name,
 					icon = trait.m.Icon,
-					fileName = traitArray[0];
+					fileName = traitArray[1],
 					tooltip = trait.getTooltip(),
 					excluded = trait.m.Excluded,
 					cost = traitCost
@@ -161,6 +174,7 @@ this.avatar_manager <- {
 				fileName = backgroundFileName,
 				characterName = name,
 				characterHistory = description,
+				startingLevel = this.getBackgroundStartingLevel(_scenarioId)
 			},
 			traits = traits,
 			totalPoints = 50,
@@ -194,26 +208,32 @@ this.avatar_manager <- {
 		local addEquipment = false;
 		local oldItems = {};
 		//find existing avatar
-		for( local i = 0; i < roster.length; i++ )
+		for( local i = 0; i < bros.len(); i++ )
 		{
-			local bro;
+			local bro = bros[i];
 			if (bro.getSkills().hasSkill("trait.player")) {
 				avatarBro = bro;
-				
+				logInfo("avatar - found bro");
 				break;
 			}
 		}
 		//or create new one
 		if (avatarBro == null) {
+			logInfo("avatar - new bro");
 			avatarBro = roster.create("scripts/entity/tactical/player");
-			bro.setStartValuesEx([
+			avatarBro.setStartValuesEx([
 				_settings.background.fileName
 			]);
 			
 		}
 		
+		foreach (key, value in avatarBro.m.Background) {
+			logInfo(key + " = " + value);
+		}
+		
 		// set background if different
-		if (avatarBro.m.Background.ID != _settings.background.id) {
+		if (!avatarBro.getSkills().hasSkill(_settings.background.id)) {
+			logInfo("avatar - set background");
 			local background = this.new("scripts/skills/backgrounds/" + _backgrounds[this.Math.rand(0, _backgrounds.len() - 1)]);
 			avatarBro.m.Skills.add(background);
 			avatarBro.m.Background = background;
@@ -226,8 +246,8 @@ this.avatar_manager <- {
 		}
 		
 		// set traits
-		for( local i = 0; i < _settings.traits.length; i++ ) {
-			local trait = this.new("scripts/skills/traits" + _settings.traits[i].fileName);
+		for( local i = 0; i < _settings.traits.len(); i++ ) {
+			local trait = this.new(_settings.traits[i].fileName);
 			
 			if (trait != null) {
 				avatarBro.getSkills().add(trait);
@@ -239,7 +259,15 @@ this.avatar_manager <- {
 		local talents = avatarBro.getTalents();
 		foreach (key, attribute in _settings.attributes) {
 			baseProperties[key] = attribute.value;
-			talents[key] = attribute.talents;
+			if (key == "Stamina") { 
+				// what the hell, why is this sometimes referred as fatigue and sometimes as stamina. 
+				// I can not tell you just how infuriating this is.
+				talents[this.Const.Attributes["Fatigue"]] = attribute.talents;
+			} else {
+				talents[this.Const.Attributes[key]] = attribute.talents;
+			}
+			
+			
 		}
 		avatarBro.getSkills().update();
 		
@@ -247,7 +275,21 @@ this.avatar_manager <- {
 		
 		avatarBro.getBackground().m.RawDescription = _settings.background.characterHistory;
 		avatarBro.getBackground().buildDescription(true);
-		avatarBro.setName(_settings.background.characterName);		
+		avatarBro.setName(_settings.background.characterName);
+		
+		if ("StartingLevel" in _settings.background) {
+			avatarBro.m.PerkPoints = _settings.background.startingLevel -1;
+			avatarBro.m.LevelUps = _settings.background.startingLevel - 1;
+			avatarBro.m.Level = _settings.background.startingLevel;
+		} else {
+			avatarBro.m.PerkPoints = 0;
+			avatarBro.m.LevelUps = 0;
+			avatarBro.m.Level = 1;
+		}
+		
+		
+		
+		avatarBro.getFlags().set("IsPlayerCharacter", true);
 		
 	}
 }

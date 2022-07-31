@@ -1,7 +1,7 @@
-var AvatarSkillModule = function(_parentDiv, name, skillConfig, pointsControl) {
+var AvatarAttributesModule = function(_parentDiv, name, skillConfig, pointsModule) {
 	this.name = name;
 	this.config = skillConfig;
-	this.pointsControl = pointsControl;
+	this.pointsModule = pointsModule;
 	
 
 	
@@ -67,16 +67,18 @@ var AvatarSkillModule = function(_parentDiv, name, skillConfig, pointsControl) {
 		self.increaseTalents();
 	},'next-banner-button', 8);
 	
-	
+	$(window).on("pointsModule.changed", function() {
+		self.visualizeSkillButtons();
+		self.visualizeTalentButtons();
+	})
 	
 
 }
-
-AvatarSkillModule.prototype.initialize = function(_parentDiv) {
+AvatarAttributesModule.prototype.initialize = function(_parentDiv) {
 
 }
 
-AvatarSkillModule.prototype.setValues = function(value, min, max, base, pointsWeight) {
+AvatarAttributesModule.prototype.setValues = function(value, min, max, base, pointsWeight) {
 	this.value = +value;
 	this.minValue = +min;
 	this.maxValue = +max;
@@ -84,64 +86,65 @@ AvatarSkillModule.prototype.setValues = function(value, min, max, base, pointsWe
 	this.pointsWeight = +pointsWeight;
 	this.visualizeSkillValue();
 }
-
-AvatarSkillModule.prototype.increaseSkill = function() {
+AvatarAttributesModule.prototype.increaseSkill = function() {
 	if (this.value >= this.maxValue) {
 		return;
 	}
 	var cost = this.skillIncreaseCost();
-	if (cost > this.pointsControl.availablePoints()) {
+	if (cost > this.pointsModule.availablePoints()) {
 		return;
 	}
 	this.value++;
-	this.pointsControl.changePoints(cost);
+	this.pointsModule.changePoints(cost);
 	this.visualizeSkillValue();
 	
 }
-
-AvatarSkillModule.prototype.decreaseSkill = function() {
+AvatarAttributesModule.prototype.decreaseSkill = function() {
 	if (this.value <= this.minValue) {
 		return;
 	}
 	var cost = this.skillDecreaseCost();
 	this.value--;
-	this.pointsControl.changePoints(-cost);
+	this.pointsModule.changePoints(-cost);
 	this.visualizeSkillValue();
 	
 }
 
-
-AvatarSkillModule.prototype.increaseTalents = function() {
-	if (this.talents >= 3 || this.pointsControl.availableTalents() <= 0) {
+AvatarAttributesModule.prototype.increaseTalents = function() {
+	if (this.talents >= 3 || this.pointsModule.availableTalents() <= 0) {
 		return;
 	}
 	
 	this.talents++;
-	this.pointsControl.changeTalents(1);
+	this.pointsModule.changeTalents(1);
 	this.visualizeTalents();
 	
 }
-
-AvatarSkillModule.prototype.decreaseTalents = function() {
+AvatarAttributesModule.prototype.decreaseTalents = function() {
 	if (this.talents <= 0) {
 		return;
 	}
 	this.talents--;
-	this.pointsControl.changeTalents(-1);
+	this.pointsModule.changeTalents(-1);
 	this.visualizeTalents();
 }
-
-AvatarSkillModule.prototype.visualize = function() {
+AvatarAttributesModule.prototype.visualize = function() {
 	this.visualizeSkillValue();
 	this.visualizeTalents();
 }
-
-AvatarSkillModule.prototype.visualizeSkillValue = function() {
+AvatarAttributesModule.prototype.visualizeSkillValue = function() {
 	this.progressbar.changeProgressbarNormalWidth(this.value-this.minValue, this.maxValue-this.minValue, true);
 	this.progressbar.changeProgressbarLabel('' + this.value);
 	
+	this.visualizeSkillButtons();
+	
+}
+
+AvatarAttributesModule.prototype.visualizeSkillButtons = function() {
+	
+	
 	var increaseCost = this.skillIncreaseCost();
-	if (this.value >= this.maxValue || increaseCost > this.pointsControl.availablePoints()) {
+	if (this.value >= this.maxValue || increaseCost > this.pointsModule.availablePoints()) {
 		this.increaseSkillButton.enableButton(false);
 	} else {
 		this.increaseSkillButton.enableButton(true);
@@ -155,10 +158,17 @@ AvatarSkillModule.prototype.visualizeSkillValue = function() {
 	
 }
 
-AvatarSkillModule.prototype.visualizeTalents = function() {
+
+AvatarAttributesModule.prototype.visualizeTalents = function() {
 	this.talentStars.attr("src",Path.GFX + 'ui/icons/talent_' + this.talents + '.png')
 	
-	if (this.talents >= 3 || this.pointsControl.availableTalents() <= 0) {
+	this.visualizeTalentButtons();
+}
+
+AvatarAttributesModule.prototype.visualizeTalentButtons = function() {
+	this.talentStars.attr("src",Path.GFX + 'ui/icons/talent_' + this.talents + '.png')
+	
+	if (this.talents >= 3 || this.pointsModule.availableTalents() <= 0) {
 		this.increaseTalentButton.enableButton(false);
 	} else {
 		this.increaseTalentButton.enableButton(true);
@@ -171,8 +181,7 @@ AvatarSkillModule.prototype.visualizeTalents = function() {
 	}
 }
 
-
-AvatarSkillModule.prototype.skillIncreaseCost = function() {
+AvatarAttributesModule.prototype.skillIncreaseCost = function() {
 	var baseCost = this.pointsWeight;
 	var currentRanks = this.value - this.base;
 	var extraCost = Math.ceil((currentRanks+1)/2) -1;
@@ -181,8 +190,7 @@ AvatarSkillModule.prototype.skillIncreaseCost = function() {
 	return cost;
 	
 }
-
-AvatarSkillModule.prototype.skillDecreaseCost = function() {
+AvatarAttributesModule.prototype.skillDecreaseCost = function() {
 	
 	
 	var baseCost = this.pointsWeight;
