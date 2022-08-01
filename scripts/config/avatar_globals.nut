@@ -126,3 +126,13 @@ gt.Const.Avatar.SkillWeights["RangedDefense"] <- 3;
 gt.Const.Avatar.SkillWeights["Initiative"] <- 3;
 
 
+if (!("TotalPoints" in gt.Const.Avatar))
+{
+	gt.Const.Avatar.TotalPoints <- 40;
+}
+
+if (!("TotalTalents" in gt.Const.Avatar))
+{
+	gt.Const.Avatar.TotalTalents <- 9;
+}
+

@@ -42,10 +42,52 @@
 				this.m.OnStartButtonPressedListener(settings);
 			}
 		});
-		
-		
-		
+
 	});
+	
+	::mods_hookClass("scenarios/world/starting_scenario", function(o) {
+		if ("create" in o) {
+			logInfo("hooking avatar: create ");
+			if ("onCombatFinished" in o) {
+
+				logInfo("hooking avatar: onCombatFinished ");
+				local onCombatFinished = o.onCombatFinished;
+				::mods_override(o, "onCombatFinished", function() {
+					local result = onCombatFinished();
+					
+					local roster = this.World.getPlayerRoster().getAll();
+
+					foreach( bro in roster )
+					{
+						if (bro.getFlags().get("IsPlayerCharacterAvatar"))
+						{
+							return result;
+						}
+					}
+					return false;
+					
+				});
+			} else {
+				o.onCombatFinished <- function()
+				{
+					local roster = this.World.getPlayerRoster().getAll();
+
+					foreach( bro in roster )
+					{
+						if (bro.getFlags().get("IsPlayerCharacterAvatar"))
+						{
+							return true;
+						}
+					}
+					return false;
+				};
+			}
+						
+		}
+		
+		
+		
+	}, false, false);
 	
 	::mods_hookNewObjectOnce("states/world/asset_manager", function(o) {
 

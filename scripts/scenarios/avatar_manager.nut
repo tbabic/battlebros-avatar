@@ -68,9 +68,9 @@ this.avatar_manager <- {
 		
 		this.m.globalSettings.traits <- getTraitSettingsForBackground(defaultBackground);
 		
-		this.m.globalSettings.totalPoints <- 50;
+		this.m.globalSettings.totalPoints <- this.Const.Avatar.TotalPoints;
 		
-		this.m.globalSettings.totalTalents <- 9;
+		this.m.globalSettings.totalTalents <- this.Const.Avatar.TotalTalents;
 		
 		
 	}
@@ -177,8 +177,8 @@ this.avatar_manager <- {
 				startingLevel = this.getBackgroundStartingLevel(_scenarioId)
 			},
 			traits = traits,
-			totalPoints = 50,
-			totalTalents = 9
+			totalPoints = this.Const.Avatar.TotalPoints,
+			totalTalents = this.Const.Avatar.TotalTalents
 		};
 		
 		return this.m.scenarioSettingsMap[_scenarioId];
@@ -224,6 +224,7 @@ this.avatar_manager <- {
 			avatarBro.setStartValuesEx([
 				_settings.background.fileName
 			]);
+			avatarBro.getSkills().add(this.new("scripts/skills/traits/player_character_trait"));
 			
 		}
 		
@@ -288,8 +289,8 @@ this.avatar_manager <- {
 		}
 		
 		
-		
 		avatarBro.getFlags().set("IsPlayerCharacter", true);
+		avatarBro.getFlags().set("IsPlayerCharacterAvatar", true);
 		
 	}
 }
