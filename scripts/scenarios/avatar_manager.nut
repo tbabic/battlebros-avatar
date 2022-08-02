@@ -160,10 +160,10 @@ this.avatar_manager <- {
 		
 		local name = backgroundObj.m.Names[this.Math.rand(0, backgroundObj.m.Names.len() - 1)];
 		if (backgroundObj.m.ID == "background.barbarian") {
-			name = this.Const.Strings.BarbarianNames[this.Math.rand(0, this.Const.Strings.BarbarianNames.len() - 1)]);
+			name = this.Const.Strings.BarbarianNames[this.Math.rand(0, this.Const.Strings.BarbarianNames.len() - 1)];
 		}
 		
-		this.logInfo("avatar: " + scenarioId + " " + name);
+		this.logInfo("avatar: " + _scenarioId + " " + name);
 		local description = this.getBackgroundDescription(_scenarioId);
 		
 		
@@ -279,9 +279,11 @@ this.avatar_manager <- {
 		
 		// set history and name
 		
-		avatarBro.getBackground().m.RawDescription = _settings.background.characterHistory;
+		avatarBro.getBackground().m.RawDescription = _settings.characterHistory;
 		avatarBro.getBackground().buildDescription(true);
-		avatarBro.setName(_settings.background.characterName);
+		this.logInfo(_settings.background.characterName);
+		avatarBro.setName(_settings.characterName);
+		
 		
 		if ("startingLevel" in _settings.background) {
 			this.logInfo("avatar starting level: " + _settings.background.startingLevel)
@@ -293,6 +295,8 @@ this.avatar_manager <- {
 			avatarBro.m.LevelUps = 0;
 			avatarBro.m.Level = 1;
 		}
+		
+		avatarBro.m.XP = this.Const.LevelXP[avatarBro.m.Level-1];
 		
 		
 		avatarBro.getFlags().set("IsPlayerCharacter", true);
