@@ -159,6 +159,11 @@ this.avatar_manager <- {
 		
 		
 		local name = backgroundObj.m.Names[this.Math.rand(0, backgroundObj.m.Names.len() - 1)];
+		if (backgroundObj.m.ID == "background.barbarian") {
+			name = this.Const.Strings.BarbarianNames[this.Math.rand(0, this.Const.Strings.BarbarianNames.len() - 1)]);
+		}
+		
+		this.logInfo("avatar: " + scenarioId + " " + name);
 		local description = this.getBackgroundDescription(_scenarioId);
 		
 		
@@ -278,7 +283,8 @@ this.avatar_manager <- {
 		avatarBro.getBackground().buildDescription(true);
 		avatarBro.setName(_settings.background.characterName);
 		
-		if ("StartingLevel" in _settings.background) {
+		if ("startingLevel" in _settings.background) {
+			this.logInfo("avatar starting level: " + _settings.background.startingLevel)
 			avatarBro.m.PerkPoints = _settings.background.startingLevel -1;
 			avatarBro.m.LevelUps = _settings.background.startingLevel - 1;
 			avatarBro.m.Level = _settings.background.startingLevel;
