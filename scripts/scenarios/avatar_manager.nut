@@ -233,10 +233,6 @@ this.avatar_manager <- {
 			
 		}
 		
-		foreach (key, value in avatarBro.m.Background) {
-			logInfo(key + " = " + value);
-		}
-		
 		// set background if different
 		if (!avatarBro.getSkills().hasSkill(_settings.background.id)) {
 			logInfo("avatar - set background");
