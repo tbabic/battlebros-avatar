@@ -275,6 +275,8 @@ this.avatar_manager <- {
 			
 		}
 		avatarBro.getSkills().update();
+		avatarBro.fillAttributeLevelUpValues(this.Const.XP.MaxLevelWithPerkpoints - 1);
+		
 		
 		// set history and name
 		
