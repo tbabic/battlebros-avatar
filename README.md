@@ -25,7 +25,6 @@ Current version is considered a beta playtest, although I'm convinced there shou
 Known bugs:
 History field can break in new lines in the middle of the word. That's because textarea is not supported by the game UI, so a hack had to be made to make an input field multiline. I don't expect this to be ever fixed.
 
-Mod is not savegame compatible, meaning that most likely saves started before this mod and without the main character will probably be game over after first battle.
 
 Future roadmap if the mod turns to be popular
 1) option to not use it, basically skip the setting, also making savegame compatible with saves not using the mod.
