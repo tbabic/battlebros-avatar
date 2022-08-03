@@ -10,13 +10,13 @@ Starting values are average (rounded down) for each background.
 
 Each attribute has a base cost of points to increase. 
 
-Melee attack and Melee defense cost 6 points initally.
+Melee attack and Melee defense cost 6 points initially.
 Initiative costs 3 points.
 Everything else 4 points.
 
 The more an attribute is increased, the more points it will cost.
 
-For example: increasing hitpoints from 55 to 56 costs base 4 points, as well as increasing from 56 to 57. However increasing from 57 to 58 and 58 to 59 costs 5 points. If the background has more than average hitpoints then even inital cost migh be higher than base.
+For example: increasing hitpoints from 55 to 56 costs base 4 points, as well as increasing from 56 to 57. However increasing from 57 to 58 and 58 to 59 costs 5 points. If the background has more than average hitpoints then even initial cost migh be higher than base.
 
 Traits also cost points, with more powerful traits costing more and weaker traits costing less or nothing.
 
@@ -27,9 +27,8 @@ History field can break in new lines in the middle of the word. That's because t
 
 
 Future roadmap if the mod turns to be popular
-1) option to not use it, basically skip the setting, also making savegame compatible with saves not using the mod.
-2) setting appearance like with barber
-3) rebalancing point buy ssytem.
-
-
-
+1) bugfixes
+2) option to not use it, basically skip the setting, also making savegame compatible with saves not using the mod.
+3) UI improvements (such as tooltips explaining cost of attribute increase, etc)
+4) setting appearance like with barber
+5) rebalancing point buy sytsem.
