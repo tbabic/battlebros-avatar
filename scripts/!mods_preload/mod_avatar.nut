@@ -1,4 +1,4 @@
-::mods_registerMod("mod_avatar", 0.8.1, "Avatar");
+::mods_registerMod("mod_avatar", 0.8.2, "Avatar");
 ::mods_queue(null, null, function()
 {
 	::mods_registerCSS("screens/menu/modules/campaign_menu/avatar_menu.css");

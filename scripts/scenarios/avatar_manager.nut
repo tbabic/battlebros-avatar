@@ -87,7 +87,7 @@ this.avatar_manager <- {
 	function getBackgroundStartingLevel( _selectedScenarioId )
 	{
 		if (!(_selectedScenarioId in this.Const.Avatar.ScenarioBackgrounds)) {
-			return "sellsword_background";
+			return 1;
 		}
 		if ("StartingLevel" in this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId]) {
 			return this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId].StartingLevel;
