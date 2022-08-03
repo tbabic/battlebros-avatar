@@ -55,6 +55,11 @@
 				::mods_override(o, "onCombatFinished", function() {
 					local result = onCombatFinished();
 					
+					
+					if (!this.World.Statistics.getFlags().get("AvatarMod_AvatarCreated")) {
+						return result;
+					}
+					
 					local roster = this.World.getPlayerRoster().getAll();
 
 					foreach( bro in roster )

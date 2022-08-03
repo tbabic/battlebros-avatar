@@ -205,6 +205,9 @@ this.avatar_manager <- {
 	}
 	
 	function setAvatar(_settings) {
+	
+		this.World.Statistics.getFlags().set("AvatarMod_AvatarCreated", true);
+	
 		this.logInfo("settingAvatar");
 		local roster = this.World.getPlayerRoster();
 		local bros = roster.getAll();
