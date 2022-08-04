@@ -1,112 +1,68 @@
+// a namespace for your mod where you can put stuff like a Const table in
+::AvatarMod <- {};
+
 ::mods_registerMod("mod_avatar", 0.8.2, "Avatar");
-::mods_queue(null, null, function()
+//for some reason, it breaks if MSU is present
+::mods_queue(null, ">mod_msu", function()
 {
-	::mods_registerCSS("screens/menu/modules/campaign_menu/avatar_menu.css");
-	::mods_registerJS("screens/menu/modules/campaign_menu/avatar_points_module.js");
-	::mods_registerJS("screens/menu/modules/campaign_menu/avatar_attributes_module.js");
-	::mods_registerJS("screens/menu/modules/campaign_menu/avatar_traits_module.js");
-    ::mods_registerJS("screens/menu/modules/campaign_menu/new_campaign_menu_module.js");
+	::mods_registerCSS("avatarmod/avatar_menu.css");
+	// a file that runs first to set up table and later perhaps const variables or something
+	::mods_registerJS("avatarmod/avatar_setup.js");
+	::mods_registerJS("avatarmod/avatar_points_module.js");
+	::mods_registerJS("avatarmod/avatar_attributes_module.js");
+	::mods_registerJS("avatarmod/avatar_traits_module.js");
+    ::mods_registerJS("avatarmod/new_campaign_menu_module.js");
+
+    //include the config file
+    ::include("AvatarMod/const/avatar_globals");
+
+    //put the manager in the namespace
+    ::AvatarMod.AvatarManager <- this.new("scripts/scenarios/avatar_manager");
 
 	::mods_hookNewObject("ui/screens/menu/modules/new_campaign_menu_module", function(o) {
 
 		o.onCampaignOriginSelected <- function( selectedScenarioId )
 		{
-
-			if(!("AvatarManager" in this.Const)) {
-				this.Const.AvatarManager <- this.new("scripts/scenarios/avatar_manager");
-			}
-			
-			local settings = this.Const.AvatarManager.getSettings(selectedScenarioId);
-			
+			local settings = ::AvatarMod.AvatarManager.getSettings(selectedScenarioId);
 			this.m.JSHandle.asyncCall("avatarSettings", settings)
 		};
 		
-		::mods_override(o, "onStartButtonPressed", function(_settings) {
-			local settings = {
-				Name = _settings[0],
-				Banner = _settings[1],
-				Difficulty = _settings[2],
-				EconomicDifficulty = _settings[3],
-				BudgetDifficulty = _settings[4],
-				Ironman = _settings[5],
-				ExplorationMode = _settings[6],
-				GreaterEvil = _settings[7],
-				PermanentDestruction = _settings[8],
-				Seed = _settings[9],
-				StartingScenario = _settings[10],
-				avatarSettings = _settings[11]
-			};
-
-			if (this.m.OnStartButtonPressedListener != null)
-			{
-				this.m.OnStartButtonPressedListener(settings);
-			}
-		});
-
+		// we can set the settings in the manager directly
+		local onStartButtonPressed = o.onStartButtonPressed;
+		o.onStartButtonPressed = function(_settings)
+		{
+			::AvatarMod.AvatarManager.m.AvatarSettings <- _settings[11];
+			return onStartButtonPressed(_settings);
+		}
 	});
 	
-	::mods_hookClass("scenarios/world/starting_scenario", function(o) {
-		if ("create" in o) {
-			logInfo("hooking avatar: create ");
-			if ("onCombatFinished" in o) {
+	// No need for the previous, complicated hook you had, mods_getMember already gets the parent function if the child doesn't have it
+	::mods_hookBaseClass("scenarios/world/starting_scenario", function(o) {
+		local onCombatFinished = ::mods_getMember(o, "onCombatFinished");
+		::mods_override(o, "onCombatFinished", function() {
 
-				logInfo("hooking avatar: onCombatFinished ");
-				local onCombatFinished = o.onCombatFinished;
-				::mods_override(o, "onCombatFinished", function() {
-					local result = onCombatFinished();
-					
-					
-					if (!this.World.Statistics.getFlags().get("AvatarMod_AvatarCreated")) {
-						return result;
-					}
-					
-					local roster = this.World.getPlayerRoster().getAll();
-
-					foreach( bro in roster )
-					{
-						if (bro.getFlags().get("IsPlayerCharacterAvatar"))
-						{
-							return result;
-						}
-					}
-					return false;
-					
-				});
-			} else {
-				o.onCombatFinished <- function()
-				{
-					local roster = this.World.getPlayerRoster().getAll();
-
-					foreach( bro in roster )
-					{
-						if (bro.getFlags().get("IsPlayerCharacterAvatar"))
-						{
-							return true;
-						}
-					}
-					return false;
-				};
+			if (!this.World.Statistics.getFlags().get("AvatarMod_AvatarCreated")) {
+				return onCombatFinished();
 			}
-						
-		}
-		
-		
-		
-	}, false, false);
+
+			local roster = this.World.getPlayerRoster().getAll();
+			foreach( bro in roster )
+			{
+				if (bro.getFlags().get("IsPlayerCharacterAvatar"))
+				{
+					return true;
+				}
+			}
+			return false;
+		});
+	});
 	
 	::mods_hookNewObjectOnce("states/world/asset_manager", function(o) {
 
 		local setCampaignSettings = o.setCampaignSettings;
-		//::mods_addHook("asset_manager.setCampaignSettings", func )
-		
 		::mods_override(o, "setCampaignSettings", function(_settings) {
-			logInfo("logging settings");
-			foreach (key, value in _settings) {
-				logInfo(key + " = " + value);
-			}
 			setCampaignSettings(_settings);
-			this.Const.AvatarManager.setAvatar(_settings.avatarSettings);
-
+			::AvatarMod.AvatarManager.setAvatar(); // no need to pass settings anymore, the function has them in the Manager
 		});
 		
 	});
