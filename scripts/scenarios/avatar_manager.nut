@@ -2,6 +2,7 @@ this.avatar_manager <- {
 	m = {
 		globalSettings = {},
 		scenarioSettingsMap = {},
+		AvatarSettings = null,
 	},
 	
 	function create()
@@ -50,7 +51,7 @@ this.avatar_manager <- {
 			this.m.globalSettings.attributes[key].max <- value[1];
 			this.m.globalSettings.attributes[key].value <- avg;
 			this.m.globalSettings.attributes[key].baseValue <- avg;
-			this.m.globalSettings.attributes[key].pointsWeight <- this.Const.Avatar.SkillWeights[key];
+			this.m.globalSettings.attributes[key].pointsWeight <- ::AvatarMod.Const.SkillWeights[key];
 		}
 		
 		
@@ -68,9 +69,9 @@ this.avatar_manager <- {
 		
 		this.m.globalSettings.traits <- getTraitSettingsForBackground(defaultBackground);
 		
-		this.m.globalSettings.totalPoints <- this.Const.Avatar.TotalPoints;
+		this.m.globalSettings.totalPoints <- ::AvatarMod.Const.TotalPoints;
 		
-		this.m.globalSettings.totalTalents <- this.Const.Avatar.TotalTalents;
+		this.m.globalSettings.totalTalents <- ::AvatarMod.Const.TotalTalents;
 		
 		
 	}
@@ -78,19 +79,19 @@ this.avatar_manager <- {
 	
 	function getBackground( _selectedScenarioId )
 	{
-		if (!(_selectedScenarioId in this.Const.Avatar.ScenarioBackgrounds)) {
+		if (!(_selectedScenarioId in ::AvatarMod.Const.ScenarioBackgrounds)) {
 			return "sellsword_background";
 		}
-		return this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId].Background;
+		return ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId].Background;
 	}
 	
 	function getBackgroundStartingLevel( _selectedScenarioId )
 	{
-		if (!(_selectedScenarioId in this.Const.Avatar.ScenarioBackgrounds)) {
+		if (!(_selectedScenarioId in ::AvatarMod.Const.ScenarioBackgrounds)) {
 			return 1;
 		}
-		if ("StartingLevel" in this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId]) {
-			return this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId].StartingLevel;
+		if ("StartingLevel" in ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId]) {
+			return ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId].StartingLevel;
 		}
 		return 1;
 		
@@ -98,10 +99,10 @@ this.avatar_manager <- {
 	
 	function getBackgroundDescription( _selectedScenarioId )
 	{
-		if (!(_selectedScenarioId in this.Const.Avatar.ScenarioBackgrounds)) {
+		if (!(_selectedScenarioId in ::AvatarMod.Const.ScenarioBackgrounds)) {
 			return "sellsword_background";
 		}
-		return this.Const.Avatar.ScenarioBackgrounds[_selectedScenarioId].Description;
+		return ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId].Description;
 	}
 	
 	function getTraitSettingsForBackground( _background) {
@@ -113,8 +114,8 @@ this.avatar_manager <- {
 			if (!_background.isExcluded(traitArray[0])) {
 				local trait = this.new(traitArray[1]);
 				local traitCost = 0;
-				if (trait.m.ID in this.Const.Avatar.TraitCosts) {
-					traitCost = this.Const.Avatar.TraitCosts[trait.m.ID];
+				if (trait.m.ID in ::AvatarMod.Const.TraitCosts) {
+					traitCost = ::AvatarMod.Const.TraitCosts[trait.m.ID];
 				}
 				
 				
@@ -182,8 +183,8 @@ this.avatar_manager <- {
 				startingLevel = this.getBackgroundStartingLevel(_scenarioId)
 			},
 			traits = traits,
-			totalPoints = this.Const.Avatar.TotalPoints,
-			totalTalents = this.Const.Avatar.TotalTalents
+			totalPoints = ::AvatarMod.Const.TotalPoints,
+			totalTalents = ::AvatarMod.Const.TotalTalents
 		};
 		
 		return this.m.scenarioSettingsMap[_scenarioId];
@@ -204,11 +205,10 @@ this.avatar_manager <- {
 		return settings;
 	}
 	
-	function setAvatar(_settings) {
-	
+	function setAvatar() {
+		local settings = this.m.AvatarSettings;
 		this.World.Statistics.getFlags().set("AvatarMod_AvatarCreated", true);
 	
-		this.logInfo("settingAvatar");
 		local roster = this.World.getPlayerRoster();
 		local bros = roster.getAll();
 		
@@ -230,14 +230,14 @@ this.avatar_manager <- {
 			logInfo("avatar - new bro");
 			avatarBro = roster.create("scripts/entity/tactical/player");
 			avatarBro.setStartValuesEx([
-				_settings.background.fileName
+				settings.background.fileName
 			]);
 			avatarBro.getSkills().add(this.new("scripts/skills/traits/player_character_trait"));
 			
 		}
 		
 		// set background if different
-		if (!avatarBro.getSkills().hasSkill(_settings.background.id)) {
+		if (!avatarBro.getSkills().hasSkill(settings.background.id)) {
 			logInfo("avatar - set background");
 			local background = this.new("scripts/skills/backgrounds/" + _backgrounds[this.Math.rand(0, _backgrounds.len() - 1)]);
 			avatarBro.m.Skills.add(background);
@@ -251,8 +251,8 @@ this.avatar_manager <- {
 		}
 		
 		// set traits
-		for( local i = 0; i < _settings.traits.len(); i++ ) {
-			local trait = this.new(_settings.traits[i].fileName);
+		for( local i = 0; i < settings.traits.len(); i++ ) {
+			local trait = this.new(settings.traits[i].fileName);
 			
 			if (trait != null) {
 				avatarBro.getSkills().add(trait);
@@ -262,7 +262,7 @@ this.avatar_manager <- {
 		// set attributes and talents
 		local baseProperties = avatarBro.getBaseProperties();
 		local talents = avatarBro.getTalents();
-		foreach (key, attribute in _settings.attributes) {
+		foreach (key, attribute in settings.attributes) {
 			baseProperties[key] = attribute.value;
 			if (key == "Stamina") { 
 				// what the hell, why is this sometimes referred as fatigue and sometimes as stamina. 
@@ -280,17 +280,17 @@ this.avatar_manager <- {
 		
 		// set history and name
 		
-		avatarBro.getBackground().m.RawDescription = _settings.characterHistory;
+		avatarBro.getBackground().m.RawDescription = settings.characterHistory;
 		avatarBro.getBackground().buildDescription(true);
-		this.logInfo(_settings.background.characterName);
-		avatarBro.setName(_settings.characterName);
+		this.logInfo(settings.background.characterName);
+		avatarBro.setName(settings.characterName);
 		
 		
-		if ("startingLevel" in _settings.background) {
-			this.logInfo("avatar starting level: " + _settings.background.startingLevel)
-			avatarBro.m.PerkPoints = _settings.background.startingLevel -1;
-			avatarBro.m.LevelUps = _settings.background.startingLevel - 1;
-			avatarBro.m.Level = _settings.background.startingLevel;
+		if ("startingLevel" in settings.background) {
+			this.logInfo("avatar starting level: " + settings.background.startingLevel)
+			avatarBro.m.PerkPoints = settings.background.startingLevel -1;
+			avatarBro.m.LevelUps = settings.background.startingLevel - 1;
+			avatarBro.m.Level = settings.background.startingLevel;
 		} else {
 			avatarBro.m.PerkPoints = 0;
 			avatarBro.m.LevelUps = 0;
