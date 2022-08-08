@@ -1,4 +1,4 @@
-::mods_registerMod("mod_avatar", 0.8.2, "Avatar");
+::mods_registerMod("mod_avatar", 0.8.3, "Avatar");
 ::mods_queue(null, null, function()
 {
 	::mods_registerCSS("screens/menu/modules/campaign_menu/avatar_menu.css");
@@ -54,12 +54,9 @@
 				local onCombatFinished = o.onCombatFinished;
 				::mods_override(o, "onCombatFinished", function() {
 					local result = onCombatFinished();
-					
-					
 					if (!this.World.Statistics.getFlags().get("AvatarMod_AvatarCreated")) {
 						return result;
 					}
-					
 					local roster = this.World.getPlayerRoster().getAll();
 
 					foreach( bro in roster )
@@ -75,6 +72,9 @@
 			} else {
 				o.onCombatFinished <- function()
 				{
+					if (!this.World.Statistics.getFlags().get("AvatarMod_AvatarCreated")) {
+						return true;
+					}
 					local roster = this.World.getPlayerRoster().getAll();
 
 					foreach( bro in roster )
