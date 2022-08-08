@@ -118,19 +118,13 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
     });
 }
 
-
-
-NewCampaignMenuModule.prototype.notifyBackendStartButtonPressed = function ()
+var AvatarMod = {};
+AvatarMod.collectSettings = NewCampaignMenuModule.prototype.collectSettings;
+NewCampaignMenuModule.prototype.collectSettings = function ()
 {
-	if (this.mSQHandle !== null)
-	{
-		
-		var settings = this.collectSettings();
-		settings.push(this.collectAvatarSettings());
-		
-		
-		SQ.call(this.mSQHandle, 'onStartButtonPressed', settings);
-	}
+	var settings = AvatarMod.collectSettings.call(this);
+	settings.push(this.collectAvatarSettings());
+	return settings;
 };
 
 NewCampaignMenuModule.prototype.notifyBackendOriginSelected = function() {
@@ -140,8 +134,6 @@ NewCampaignMenuModule.prototype.notifyBackendOriginSelected = function() {
 			var selectedScenario = this.mScenarios[this.mSelectedScenario];
 			SQ.call(this.mSQHandle, 'onCampaignOriginSelected', selectedScenario.ID);
 		}
-		
-		
 	}
 }
 
