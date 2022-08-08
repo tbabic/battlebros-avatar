@@ -1,7 +1,7 @@
 // a namespace for your mod where you can put stuff like a Const table in
 ::AvatarMod <- {};
 
-::mods_registerMod("mod_avatar", 0.8.2, "Avatar");
+::mods_registerMod("mod_avatar", 0.8.3, "Avatar");
 //for some reason, it breaks if MSU is present
 ::mods_queue(null, ">mod_msu", function()
 {
