@@ -275,6 +275,7 @@ this.avatar_manager <- {
 			
 		}
 		avatarBro.getSkills().update();
+		avatarBro.m.Attributes = [];
 		avatarBro.fillAttributeLevelUpValues(this.Const.XP.MaxLevelWithPerkpoints - 1);
 		
 		
