@@ -304,5 +304,12 @@ this.avatar_manager <- {
 		avatarBro.getFlags().set("IsPlayerCharacter", true);
 		avatarBro.getFlags().set("IsPlayerCharacterAvatar", true);
 		
+		if (this.World.Assets.getOrigin().getID() == "scenario.manhunters" && avatarBro.getBackground().getID() != "background.slave")
+		{
+			avatarBro.getSkills().add(this.new("scripts/skills/actives/whip_slave_skill"));
+		}
+		
+		
+		
 	}
 }
