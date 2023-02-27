@@ -136,6 +136,39 @@
 
 .l-text-area {
 	width: 30rem;
+	
+	
+}
+
+textarea.history-input {
+    -moz-user-select: -moz-text;
+    -webkit-user-select: text;
+    user-select: text;
+	resize: none;
+	
+	width: 100%;
+    height: 28rem;
+	background-color: #261F1A ;
+	border: none;
+	color: #dda21f !important;
+	
+	font-family: 'Cinzel-Bold', monospace;
+	font-size: 14px;
+}
+
+textarea.history-input:hover {
+
+	background-color: #302117;
+	background-image: none;
+
+}
+
+textarea.history-input:focus {
+ 
+	border: none;
+	outline: 0;
+	background-image: none;
+	background-color: #302117;
 }
 
 

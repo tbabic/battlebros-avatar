@@ -44,9 +44,13 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		var inputLayout = $('<div class="l-text-area"/>');
 		row.append(inputLayout);
 		var outline = $('<div class="avatar-history-border"/>')
+		var outline2 = $('<div class="avatar-history-border"/>')
 		inputLayout.append(outline);
-
-		this.avatarHistory = outline.createInput('', 0, 1000, 1, undefined, 'avatar-history title-font-normal');
+		
+		this.avatarHistory = $('<textarea class="history-input"/>')
+		outline.append(this.avatarHistory);
+		
+		this.avatarHistoryInput = outline2.createInput('', 0, 1000, 1, undefined, 'avatar-history title-font-normal');
 	
 		
 		
@@ -162,7 +166,8 @@ NewCampaignMenuModule.prototype.setAvatarSettings = function(settings) {
 	this.backgroundImage.attr('src', Path.GFX + settings.background.icon);
 	
 	this.avatarName.setInputText(settings.background.characterName);
-	this.avatarHistory.setInputText(settings.background.characterHistory);
+	this.avatarHistoryInput.setInputText(settings.background.characterHistory);
+	this.avatarHistory.val(settings.background.characterHistory);
 	this.pointsModule.totalPoints = settings.totalPoints;
 	this.pointsModule.changePoints(0);
 	this.pointsModule.totalTalents = settings.totalTalents;
@@ -323,7 +328,8 @@ NewCampaignMenuModule.prototype.collectAvatarSettings = function(){
 	}
 	
 	var characterName = this.avatarName.getInputText();
-	var characterHistory = this.avatarHistory.getInputText();
+	var characterHistory = this.avatarHistory.val();
+	var characterHistory = this.avatarHistoryInput.getInputText();
 	var avatarSettings = {
 		attributes : attributes,
 		background : this.background,
