@@ -11,20 +11,25 @@
 	::mods_registerJS("avatarmod/avatar_points_module.js");
 	::mods_registerJS("avatarmod/avatar_attributes_module.js");
 	::mods_registerJS("avatarmod/avatar_traits_module.js");
+	::mods_registerJS("avatarmod/avatar_appearance_module.js");
     ::mods_registerJS("avatarmod/new_campaign_menu_module.js");
 
     //include the config file
     ::include("AvatarMod/const/avatar_globals");
+	::include("AvatarMod/utils/appearance_manager");
 
     //put the manager in the namespace
     ::AvatarMod.AvatarManager <- this.new("scripts/scenarios/avatar_manager");
-
+	::AvatarMod.AppearanceManager <- this.new("AvatarMod/utils/appearance_manager");
+	
 	::mods_hookNewObject("ui/screens/menu/modules/new_campaign_menu_module", function(o) {
-
+		
+				
 		o.onCampaignOriginSelected <- function( selectedScenarioId )
 		{
 			local settings = ::AvatarMod.AvatarManager.getSettings(selectedScenarioId);
-			this.m.JSHandle.asyncCall("avatarSettings", settings)
+			this.m.JSHandle.asyncCall("avatarSettings", settings);			
+			
 		};
 		
 		// we can set the settings in the manager directly
@@ -33,7 +38,33 @@
 		{
 			::AvatarMod.AvatarManager.m.AvatarSettings <- _settings[11];
 			return onStartButtonPressed(_settings);
+		};
+		
+		o.getAppearanceOptions <- function(param = null)
+		{
+			logInfo("getAppearanceOptions");
+			local options = ::AvatarMod.AppearanceManager.getAppearanceOptions();
+			return options;
+		};
+		
+		o.updateAppearance <- function(data)
+		{
+			logInfo("updateAppearance");
+			return ::AvatarMod.AppearanceManager.updateAllLayers(data);
 		}
+		
+		o.updateAppearanceLayer <- function(params)
+		{
+			logInfo("updateAppearanceLayer");
+			return ::AvatarMod.AppearanceManager.updateLayer(params.layer, params.data);
+		}
+		
+		o.logging <- function(s)
+		{
+			logInfo(s);
+		}
+		
+		
 	});
 	
 	// No need for the previous, complicated hook you had, mods_getMember already gets the parent function if the child doesn't have it
@@ -65,6 +96,16 @@
 			::AvatarMod.AvatarManager.setAvatar(); // no need to pass settings anymore, the function has them in the Manager
 		});
 		
+	});
+	
+	::mods_hookClass("ui/screens/world/modules/world_town_screen/town_barber_dialog_module", function(o) {
+		logInfo("hook barber");
+		local onEntrySelected = ::mods_getMember(o, "onEntrySelected");
+		::mods_override(o, "onEntrySelected", function(_entityID) {
+			local value = onEntrySelected(_entityID);
+			logInfo(value);
+			return value;
+		});
 	});
 	
 	

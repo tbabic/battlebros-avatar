@@ -207,6 +207,10 @@ this.avatar_manager <- {
 	
 	function setAvatar() {
 		local settings = this.m.AvatarSettings;
+		if(!settings.active)
+		{
+			return;
+		}
 		this.World.Statistics.getFlags().set("AvatarMod_AvatarCreated", true);
 	
 		local roster = this.World.getPlayerRoster();
@@ -309,7 +313,16 @@ this.avatar_manager <- {
 			avatarBro.getSkills().add(this.new("scripts/skills/actives/whip_slave_skill"));
 		}
 		
+		if(settings.setAppearance)
+		{
+			logInfo("settingAppearance");
+			::AvatarMod.AppearanceManager.updateActor(avatarBro);
+			::AvatarMod.AppearanceManager.logSprites(avatarBro);
+		}
 		
+		::AvatarMod.AppearanceManager.clear();
 		
 	}
+	
+	
 }

@@ -3,6 +3,36 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 	var self = this;
 	var contentContainer = this.mDialogContainer.findDialogContentContainer();
 	
+	//TODO: third panel add option to not use avatar mod
+	var columns = $(this.mThirdPanel).find(".column");
+	var thirdPanelRightColumn = $(columns[1]);
+	var row = $('<div class="row" />');
+	thirdPanelRightColumn.append(row);
+	
+	var title = $('<div class="title title-font-big font-color-title">Avatar Mode</div>');
+	row.append(title);
+
+	var avatarControl = $('<div class="control ironman-control"/>');
+	row.append(avatarControl);
+	this.mAvatarCheckbox = $('<input type="checkbox" id="cb-avatar-check" checked/>');
+	avatarControl.append(this.mAvatarCheckbox);
+	this.mAvatarCheckboxLabel = $('<label class="text-font-normal font-color-subtitle" for="cb-iron-man">Avatar</label>');
+	avatarControl.append(this.mAvatarCheckboxLabel);
+	this.mAvatarCheckbox.iCheck({
+		checkboxClass: 'icheckbox_flat-orange',
+		radioClass: 'iradio_flat-orange',
+		increaseArea: '30%'
+	});
+	
+	this.mAvatarCheckbox.on("ifToggled", function ()
+	{
+		self.handleAvatarPanels();
+	});
+	
+	//on click
+	
+	//FOURTH PANEL
+	
 	this.mFourthPanel = $('<div class="display-none fourth-panel"/>');
 	contentContainer.append(this.mFourthPanel);
 
@@ -51,78 +81,152 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		outline.append(this.avatarHistory);
 		
 		this.avatarHistoryInput = outline2.createInput('', 0, 1000, 1, undefined, 'avatar-history title-font-normal');
+		
+		var row = $('<div class="row" />');
+		rightColumn.append(row);
+		
+		var title = $('<div class="title title-font-big font-color-title">Appearance Mode</div>');
+		//row.append(title);
+
+		var appearanceControl = $('<div class="control ironman-control"/>');
+		row.append(appearanceControl);
+		this.mAppearanceCheckbox = $('<input type="checkbox" id="cb-appearance-check" checked/>');
+		appearanceControl.append(this.mAppearanceCheckbox);
+		this.mAppearanceCheckboxLabel = $('<label class="text-font-normal font-color-subtitle" for="cb-iron-man">Edit appearance</label>');
+		appearanceControl.append(this.mAppearanceCheckboxLabel);
+		this.mAppearanceCheckbox.iCheck({
+			checkboxClass: 'icheckbox_flat-orange',
+			radioClass: 'iradio_flat-orange',
+			increaseArea: '30%'
+		});
+	
+		this.mAppearanceCheckbox.on("ifToggled", function ()
+		{
+			self.handleAvatarPanels();
+		});
+			
+		
+	//fifth panel
+	this.mFifthPanel = $('<div class="display-none fifth-panel"/>');
+	contentContainer.append(this.mFifthPanel);
+	this.appearanceModule = new AvatarAppearanceModule( this.mSQHandle);
+	this.appearanceModule.createDIV(this.mFifthPanel);
 	
 		
-		
-		
-	
-		
-		
-		
+	this.panels = [this.mFirstPanel, this.mSecondPanel, this.mThirdPanel, this.mFourthPanel, this.mFifthPanel];
+	this.currentPanel = 0;
 		
 	
 	this.mStartButton.unbind("click");
 	this.mStartButton.on("click", function ()
 	{
-		
-		if(self.mFirstPanel.hasClass('display-block'))
+		if (self.currentPanel == 0)
 		{
-			self.mFirstPanel.removeClass('display-block').addClass('display-none');
-			self.mSecondPanel.addClass('display-block').removeClass('display-none');
-			self.mCancelButton.changeButtonText("Previous");
-			self.mStartButton.enableButton(self.mCompanyName.getInputTextLength() >= 1);
 			self.notifyBackendOriginSelected();
 		}
-		else if(self.mSecondPanel.hasClass('display-block'))
+		
+		if(self.currentPanel == (self.panels.length -1))
 		{
-			self.mSecondPanel.removeClass('display-block').addClass('display-none');
-			self.mThirdPanel.addClass('display-block').removeClass('display-none');
+			self.notifyBackendStartButtonPressed()
+			return;
 		}
-		else if(self.mThirdPanel.hasClass('display-block'))
-		{
-			self.mThirdPanel.removeClass('display-block').addClass('display-none');
-			self.mFourthPanel.addClass('display-block').removeClass('display-none');
-			self.mStartButton.changeButtonText("Start");
-		}
-		else
-		{
-			self.notifyBackendStartButtonPressed();
-		}    	
+		self.currentPanel++;
+		self.updatePanels();
+		
+			
 	});
 	
 	this.mCancelButton.unbind("click");
 	this.mCancelButton.on("click", function ()
     {
-    	if(self.mFirstPanel.hasClass('display-block'))
-    	{
-            self.notifyBackendCancelButtonPressed();
-        }
-        else if(self.mThirdPanel.hasClass('display-block'))
-        {
-            self.mSecondPanel.addClass('display-block').removeClass('display-none');
-            self.mThirdPanel.removeClass('display-block').addClass('display-none');
-            self.mStartButton.changeButtonText("Next");
-            self.mCancelButton.changeButtonText("Previous");
-        }
-		else if(self.mFourthPanel.hasClass('display-block'))
-        {
-            self.mThirdPanel.addClass('display-block').removeClass('display-none');
-            self.mFourthPanel.removeClass('display-block').addClass('display-none');
-            self.mStartButton.changeButtonText("Next");
-            self.mCancelButton.changeButtonText("Previous");
-        }
-    	else
-    	{
-			self.mFirstPanel.addClass('display-block').removeClass('display-none');
-			self.mSecondPanel.removeClass('display-block').addClass('display-none');
-			self.mStartButton.changeButtonText("Next");
-            self.mCancelButton.changeButtonText("Cancel");
-            self.mStartButton.enableButton(true);
-    	}    	
+		if (self.currentPanel == 0)
+		{
+			self.notifyBackendCancelButtonPressed();
+		}
+		else
+		{
+			self.currentPanel--;
+		}
+		
+		self.updatePanels();
+		
+    	
     });
 }
 
+NewCampaignMenuModule.prototype.updatePanels = function()
+{	
+
+	if(this.currentPanel == 0)
+	{
+		this.mCancelButton.changeButtonText("Cancel");
+	}
+	else
+	{
+		this.mCancelButton.changeButtonText("Previous");
+	}
+	
+	if(this.currentPanel == 1)
+	{
+		this.mStartButton.enableButton(this.mCompanyName.getInputTextLength() >= 1);
+	}
+	
+	if (this.currentPanel == (this.panels.length -1))
+	{
+		this.mStartButton.changeButtonText("Start");
+	}
+	else
+	{
+		this.mStartButton.changeButtonText("Next");
+	}
+	
+	for(var i = 0; i < this.panels.length; i++)
+	{
+		if(i == this.currentPanel)
+		{
+			this.panels[i].addClass('display-block').removeClass('display-none');
+		}
+		else
+		{
+			this.panels[i].removeClass('display-block').addClass('display-none');
+		}
+	}
+}
+
+NewCampaignMenuModule.prototype.handleAvatarPanels = function()
+{	
+	if (this.panels.length > 3)
+	{
+		this.panels.splice(3);
+	}
+	
+	var avatarActive = this.mAvatarCheckbox.is(':checked');
+	if(avatarActive)
+	{
+		this.panels.push(this.mFourthPanel);
+		var appearanceActive = this.mAppearanceCheckbox.is(':checked');
+		if (appearanceActive)
+		{
+			
+			this.panels.push(this.mFifthPanel);
+		}
+	}
+	
+	this.updatePanels();
+}
+
+
+
 var AvatarMod = {};
+
+AvatarMod.show = NewCampaignMenuModule.prototype.show;
+NewCampaignMenuModule.prototype.show = function()
+{
+	this.currentPanel = 0;
+	AvatarMod.show.call(this);
+	this.updatePanels();
+}
+
 AvatarMod.collectSettings = NewCampaignMenuModule.prototype.collectSettings;
 NewCampaignMenuModule.prototype.collectSettings = function ()
 {
@@ -330,14 +434,25 @@ NewCampaignMenuModule.prototype.collectAvatarSettings = function(){
 	var characterName = this.avatarName.getInputText();
 	var characterHistory = this.avatarHistory.val();
 	var characterHistory = this.avatarHistoryInput.getInputText();
+	var avatarActive = this.mAvatarCheckbox.is(':checked');
+	var appearanceActive = this.mAppearanceCheckbox.is(':checked');
+	
+	
 	var avatarSettings = {
+		active : avatarActive,
 		attributes : attributes,
 		background : this.background,
 		traits : traits,
 		characterName : characterName,
-		characterHistory : characterHistory
+		characterHistory : characterHistory,
+		setAppearance : appearanceActive
 	};
 	return avatarSettings;
+}
+
+
+NewCampaignMenuModule.prototype.updateAppearance = function(_settings) {
+	
 }
 
 

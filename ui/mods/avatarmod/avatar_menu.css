@@ -1,3 +1,10 @@
+.column.single
+{
+	width: 70% !important;
+	margin-left: 15%;
+	margin-right: 15%;
+}
+
 .new-campaign-menu-module .row > .l-progressbar-container
 {
 	top: -0.7rem;
@@ -287,4 +294,28 @@ div.avatar-history:focus {
 	background-color: #302117;
 }
 
+.column.single .row
+{
+	width: 100% !important;
+}
 
+.avatar-appearance .appearance-control
+{
+	display: inline-block;
+	width: 50%;
+}
+
+.avatar-appearance .ui-control.text
+{
+	display: inline-block;
+	width: calc(100% - 9rem);
+	text-align: center;
+
+	background-size: 100% 100%;
+}
+
+.image-wrapper
+{
+	text-align: center;
+	margin-top: 10px;
+}
