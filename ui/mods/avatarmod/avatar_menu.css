@@ -319,3 +319,31 @@ div.avatar-history:focus {
 	text-align: center;
 	margin-top: 10px;
 }
+
+.background-control
+{
+	top: -1rem;
+    position: relative;
+    display: inline-block;
+}
+
+.background-control .ui-control
+{
+	top: -1.5rem;
+}
+
+.background-control .ui-control img
+{
+	height: 2.3rem;
+}
+
+
+.background-control img
+{
+	height: 4rem;
+}
+
+.row.background
+{
+	height: 4rem;
+}

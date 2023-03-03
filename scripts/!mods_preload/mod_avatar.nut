@@ -32,6 +32,13 @@
 			
 		};
 		
+		o.getBackgroundSettings <- function( background, scenarioId )
+		{
+			logInfo("getBackgroundSettings:" + background);
+			return ::AvatarMod.AvatarManager.getBackgroundSettings(background);	
+			
+		};
+		
 		// we can set the settings in the manager directly
 		local onStartButtonPressed = o.onStartButtonPressed;
 		o.onStartButtonPressed = function(_settings)

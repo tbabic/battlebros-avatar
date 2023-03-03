@@ -266,12 +266,20 @@ NewCampaignMenuModule.prototype.setAvatarSettings = function(settings) {
 	
 	this.traitsModule.setTraitsCollection(settings.traits);
 	
-	this.background = settings.background;
-	this.backgroundImage.attr('src', Path.GFX + settings.background.icon);
+	this.background = settings.backgrounds[0];
+	this.backgroundIndex = 0;
+	this.backgroundList = settings.backgrounds;
+	this.backgroundImage.attr('src', Path.GFX + this.background.icon);
+	this.backgroundImage.bindTooltip({ contentType: 'verbatim', 
+		tooltip : [{
+			id: 1,
+			type : "title",
+			text : this.background.name }]
+	});
 	
-	this.avatarName.setInputText(settings.background.characterName);
-	this.avatarHistoryInput.setInputText(settings.background.characterHistory);
-	this.avatarHistory.val(settings.background.characterHistory);
+	this.avatarName.setInputText(settings.characterInfo.characterName);
+	this.avatarHistoryInput.setInputText(settings.characterInfo.characterHistory);
+	this.avatarHistory.val(settings.characterInfo.characterHistory);
 	this.pointsModule.totalPoints = settings.totalPoints;
 	this.pointsModule.changePoints(0);
 	this.pointsModule.totalTalents = settings.totalTalents;
@@ -279,6 +287,8 @@ NewCampaignMenuModule.prototype.setAvatarSettings = function(settings) {
 	this.pointsModule.currentPoints = 0;
 	this.traitsModule.resetTraits();
 	
+	this.backgroundPrev.enableButton(this.backgroundList.length > 1);
+	this.backgroundNext.enableButton(this.backgroundList.length > 1);
 
 	
 }
@@ -404,11 +414,52 @@ NewCampaignMenuModule.prototype.createTraitsContent = function (parentDiv) {
 
 NewCampaignMenuModule.prototype.createBackgroundContent = function (parentDiv) {
 	
-	var row = $('<div class="row" />');
+	var row = $('<div class="row background" />');
 	parentDiv.append(row);
+	var span = $('<span class="background-control" />');
+	
+	
 	this.backgroundImage = $('<img/>');
-	row.append($('<label class="background-title title-font-big font-color-title ">Background: </label>'));
-	row.append(this.backgroundImage);
+	this.backgroundLabel = $('<label class="background-title title-font-big font-color-title ">Background: </label>');
+	row.append(this.backgroundLabel);
+	row.append(span);
+	
+	var wrapper = span;
+	
+	var self = this;
+	this.backgroundPrev = wrapper.createImageButton(Path.GFX + Asset.BUTTON_PREVIOUS_BANNER, function ()
+	{
+		self.backgroundIndex--;
+		self.backgroundIndex = (self.backgroundIndex + self.backgroundList.length ) % self.backgroundList.length;
+		self.background = self.backgroundList[self.backgroundIndex];
+		self.backgroundImage.attr('src', Path.GFX + self.background.icon);
+		self.backgroundImage.bindTooltip({ contentType: 'verbatim', 
+			tooltip : [{
+				id: 1,
+				type : "title",
+				text : self.background.name }]
+		});
+		//self.backgroundLabel.text(self.background.name);
+		self.getBackgroundSettings();
+	}, 'avatar-arrow-button', 6);
+	
+	wrapper.append(this.backgroundImage);
+	
+	this.backgroundNext = wrapper.createImageButton(Path.GFX + Asset.BUTTON_NEXT_BANNER, function ()
+	{
+		self.backgroundIndex++;
+		self.backgroundIndex = (self.backgroundIndex + self.backgroundList.length ) % self.backgroundList.length;
+		self.background = self.backgroundList[self.backgroundIndex];
+		self.backgroundImage.attr('src', Path.GFX + self.background.icon);
+		self.backgroundImage.bindTooltip({ contentType: 'verbatim', 
+			tooltip : [{
+				id: 1,
+				type : "title",
+				text : self.background.name }]
+		});
+		//self.backgroundLabel.text(self.background.name);
+		self.getBackgroundSettings();
+	}, 'avatar-arrow-button', 6);
 }
 
 
@@ -451,8 +502,27 @@ NewCampaignMenuModule.prototype.collectAvatarSettings = function(){
 }
 
 
-NewCampaignMenuModule.prototype.updateAppearance = function(_settings) {
+NewCampaignMenuModule.prototype.getBackgroundSettings = function() {
+	var self = this;
 	
+	if (this.mSQHandle !== null)
+	{
+		SQ.call(this.mSQHandle, 'getBackgroundSettings', [this.background.fileName, this.mScenarios[this.mSelectedScenario]], function(settings){
+			
+			self.traitsModule.setTraitsCollection(settings.traits);
+			self.traitsModule.resetTraits();
+			self.pointsModule.currentPoints = 0;
+			self.pointsModule.changePoints(0);
+			for(skill in settings.attributes) {
+				var attr = settings.attributes[skill];
+				self.avatarSkills[skill].setValues(attr.value, attr.min, attr.max, attr.baseValue, attr.pointsWeight);
+
+			}
+			
+			
+			
+		});
+	}
 }
 
 

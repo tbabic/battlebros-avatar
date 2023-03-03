@@ -3,10 +3,13 @@ this.avatar_manager <- {
 		globalSettings = {},
 		scenarioSettingsMap = {},
 		AvatarSettings = null,
+		backgroundInstances = {},
 	},
 	
 	function create()
 	{
+		this.m.allTraits <- clone this.Const.CharacterTraits;
+	
 		local a = {
 			Hitpoints = [
 				50,
@@ -55,13 +58,17 @@ this.avatar_manager <- {
 		}
 		
 		
-		local defaultBackground = this.new("scripts/skills/backgrounds/sellsword_background" );
+		local defaultBackground = this.getBackgroundObject("sellsword_background");
 				
-		this.m.globalSettings.background <- {
+		this.m.globalSettings.backgrounds <- [{
 			id = defaultBackground.m.ID,
 			name = defaultBackground.m.Name,
 			icon = defaultBackground.m.Icon,
 			fileName = "sellsword_background",
+			
+		}];
+		
+		this.m.globalSettings.characterInfo <- {
 			characterName = "Sigurd",
 			characterHistory = "Write your history here...",
 			startingLevel = 1
@@ -73,9 +80,24 @@ this.avatar_manager <- {
 		
 		this.m.globalSettings.totalTalents <- ::AvatarMod.Const.TotalTalents;
 		
-		
 	}
 	
+	function addAdditionalTraits(traits) {
+		foreach(t in traits)
+		{
+			this.m.allTraits.push(t);
+		}
+	}
+	
+	function getBackgroundObject(fileName)
+	{
+
+		if (!(fileName in this.m.backgroundInstances))
+		{
+			this.m.backgroundInstances[fileName] <- this.new("scripts/skills/backgrounds/" + fileName);
+		}
+		return this.m.backgroundInstances[fileName];
+	}
 	
 	function getBackground( _selectedScenarioId )
 	{
@@ -83,6 +105,14 @@ this.avatar_manager <- {
 			return "sellsword_background";
 		}
 		return ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId].Background;
+	}
+	
+	function getAltBackgrounds( _selectedScenarioId )
+	{
+		if (!(_selectedScenarioId in ::AvatarMod.Const.ScenarioBackgrounds)) {
+			return [];
+		}
+		return ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId].AlternativeBackgrounds;
 	}
 	
 	function getBackgroundStartingLevel( _selectedScenarioId )
@@ -108,9 +138,9 @@ this.avatar_manager <- {
 	function getTraitSettingsForBackground( _background) {
 		local traits = [];
 			
-		for( local i = 0; i < this.Const.CharacterTraits.len(); i = ++i )
+		for( local i = 0; i < this.m.allTraits.len(); i = ++i )
 		{
-			local traitArray = this.Const.CharacterTraits[i];
+			local traitArray = this.m.allTraits[i];
 			if (!_background.isExcluded(traitArray[0])) {
 				local trait = this.new(traitArray[1]);
 				local traitCost = 0;
@@ -133,8 +163,71 @@ this.avatar_manager <- {
 		return traits;
 	}
 	
-
+	function getTraitsForScenario(_selectedScenarioId)
+	{
+		//TODO:
+		local traits = [];
+		logInfo("checking extra traits");
+		if ("Traits" in ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId])
+		{
+			logInfo("foundExtraTraits")
+			foreach(t in ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId].Traits) 
+			{
+				logInfo("found:" + t);
+				local trait = this.new(t);
+				
+				local traitCost = 0;
+				if (trait.m.ID in ::AvatarMod.Const.TraitCosts) {
+					traitCost = ::AvatarMod.Const.TraitCosts[trait.m.ID];
+				}
+				
+				traits.push({
+					id = trait.m.ID,
+					name = trait.m.Name,
+					icon = trait.m.Icon,
+					fileName = t,
+					tooltip = trait.getTooltip(),
+					excluded = trait.m.Excluded,
+					cost = traitCost
+				});
+			}
+		}
+		
+		
+		return traits;
+	}
 	
+
+	function getBackgroundSettings(_background, _scenarioId) 
+	{
+		local backgroundObj = this.getBackgroundObject(_background);
+		local traits = getTraitSettingsForBackground(backgroundObj);
+		local extraTraits = getTraitsForScenario(_scenarioId);
+		foreach (t in extraTraits)
+		{
+			traits.push(t);
+		}
+		
+		
+		local scenarioAttributes = {};
+		
+		local attributeChanges = backgroundObj.onChangeAttributes();
+		foreach(key, value in this.m.globalSettings.attributes)
+		{
+			scenarioAttributes[key] <- {};
+			scenarioAttributes[key].min <- value.min + attributeChanges[key][0];
+			scenarioAttributes[key].max <- value.max + attributeChanges[key][1];
+			scenarioAttributes[key].value <- this.Math.floor((scenarioAttributes[key].min + scenarioAttributes[key].max)/2);
+			scenarioAttributes[key].baseValue <- value.baseValue;
+			scenarioAttributes[key].pointsWeight <- value.pointsWeight;
+
+		}
+		
+		return {
+			traits = traits,
+			attributes = scenarioAttributes
+		}
+	}
 	
 	
 	function getScenarioSettings(_scenarioId) {
@@ -143,7 +236,7 @@ this.avatar_manager <- {
 		}
 		
 		local backgroundFileName = this.getBackground(_scenarioId);
-		local backgroundObj = this.new("scripts/skills/backgrounds/" + backgroundFileName);
+		local backgroundObj = this.getBackgroundObject(backgroundFileName);
 	
 		local scenarioAttributes = {};
 		local attributeChanges = backgroundObj.onChangeAttributes();
@@ -169,25 +262,79 @@ this.avatar_manager <- {
 		
 		
 		local traits = getTraitSettingsForBackground(backgroundObj);
+		local extraTraits = getTraitsForScenario(_scenarioId);
+		foreach (t in extraTraits)
+		{
+			traits.push(t);
+		}
 		
+		
+		local startingLevel = this.getBackgroundStartingLevel(_scenarioId);
+		
+		local characterInfo = {
+			characterName = name,
+			characterHistory = description,
+			startingLevel = startingLevel
+		}
 		
 		this.m.scenarioSettingsMap[_scenarioId] <- {
 			attributes = scenarioAttributes,
-			background = {
+			backgrounds = [{
 				id = backgroundObj.m.ID,
 				name = backgroundObj.m.Name,
 				icon = backgroundObj.m.Icon,
 				fileName = backgroundFileName,
-				characterName = name,
-				characterHistory = description,
-				startingLevel = this.getBackgroundStartingLevel(_scenarioId)
-			},
+			}],
+			characterInfo = characterInfo,
 			traits = traits,
 			totalPoints = ::AvatarMod.Const.TotalPoints,
 			totalTalents = ::AvatarMod.Const.TotalTalents
 		};
 		
-		return this.m.scenarioSettingsMap[_scenarioId];
+		local scenarioSettings = this.m.scenarioSettingsMap[_scenarioId];
+		local defaultBackground = scenarioSettings.backgrounds[0];
+		
+		
+		
+		if(::AvatarMod.Const.BackgroundChoice == "ALT")
+		{
+			local altBackgrounds = this.getAltBackgrounds(_scenarioId);
+			foreach (b in altBackgrounds)
+			{
+				scenarioSettings.backgrounds.push(this.backgroundToUI(b));
+			}
+		}
+		else if(::AvatarMod.Const.BackgroundChoice == "ALL")
+		{
+			local allBackgrounds = this.Const.CharacterBackgrounds;
+			foreach (b in allBackgrounds)
+			{
+				if (backgroundFileName == b)
+				{
+					continue;
+				}
+			
+				scenarioSettings.backgrounds.push(this.backgroundToUI(b));
+			}
+		}
+		logInfo("backgrounds");
+		foreach(b in scenarioSettings.backgrounds)
+		{
+			logInfo("b: " + b.name + "; i: " + b.icon);
+		}
+		
+		return scenarioSettings;
+	}
+	
+	function backgroundToUI(backgroundFileName)
+	{
+		local bObj = this.getBackgroundObject(backgroundFileName);
+		return {
+			id = bObj.m.ID,
+			name = bObj.m.Name,
+			icon = bObj.m.Icon,
+			fileName = backgroundFileName
+		}
 	}
 	
 	function addScenarioSettings(_scenarioId, _scenarioSettings) {
@@ -233,9 +380,22 @@ this.avatar_manager <- {
 		if (avatarBro == null) {
 			logInfo("avatar - new bro");
 			avatarBro = roster.create("scripts/entity/tactical/player");
+			
+			logInfo("background: " + settings.background.fileName);
+			
+			
 			avatarBro.setStartValuesEx([
 				settings.background.fileName
 			]);
+			logInfo("skills: " + avatarBro.getSkills());
+			logInfo("skills: " + avatarBro.getBackground().getContainer());
+			
+			
+			logInfo("bg: " + avatarBro.getSkills().getSkillByID("background.barbarian"));
+			logInfo("bg: " + avatarBro.getBackground());
+			
+			logInfo("skills2: " + avatarBro.getSkills().getSkillByID("background.barbarian").getContainer());
+			logInfo("skills2: " + avatarBro.getBackground().getContainer());
 			avatarBro.getSkills().add(this.new("scripts/skills/traits/player_character_trait"));
 			
 		}
@@ -248,10 +408,30 @@ this.avatar_manager <- {
 			avatarBro.m.Background = background;
 			avatarBro.m.Ethnicity = avatarBro.m.Background.getEthnicity();
 		}
+		logInfo("avatarBro: " + avatarBro);
+		logInfo("skills: " + avatarBro.getSkills());
+		logInfo("skills: " + avatarBro.getBackground().getContainer());
+		
+		
+		logInfo(avatarBro.getBackground().getContainer().getActor().Name);
 		
 		// remove existing traits
 		foreach( trait in this.Const.CharacterTraits ) {
 			avatarBro.getSkills().removeByID(trait[0]);
+		}
+		local traitsToRemove = [];
+		foreach(s in avatarBro.getSkills().m.Skills) {
+			if (s.getID() == "trait.player")
+			{
+				continue;
+			}
+			else(this.String.contains(s.getID(), "trait"))
+			{
+				traitsToRemove.push(s.getID());
+			}
+		}
+		foreach( trait in traitsToRemove ) {
+			avatarBro.getSkills().removeByID(trait);
 		}
 		
 		// set traits
@@ -286,8 +466,11 @@ this.avatar_manager <- {
 		// set history and name
 		
 		avatarBro.getBackground().m.RawDescription = settings.characterHistory;
+		logInfo("avatar background");
+		logInfo(avatarBro.getBackground().m.ID);
+		logInfo(avatarBro.getBackground().getContainer().getActor().Name);
 		avatarBro.getBackground().buildDescription(true);
-		this.logInfo(settings.background.characterName);
+		this.logInfo(settings.characterName);
 		avatarBro.setName(settings.characterName);
 		
 		

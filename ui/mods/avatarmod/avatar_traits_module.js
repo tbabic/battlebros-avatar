@@ -20,6 +20,7 @@ var AvatarTraitsModule = function(parentDiv, pointsModule) {
 	
 	this.setTraitsCollection = function(traits) {
 		this.traits = [NONE_TRAIT].concat(traits);
+		this.resetTraits();
 	}
 	
 	this.refreshAllButtons = function() {
