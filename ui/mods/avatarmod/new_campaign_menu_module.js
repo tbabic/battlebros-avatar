@@ -276,6 +276,7 @@ NewCampaignMenuModule.prototype.setAvatarSettings = function(settings) {
 			type : "title",
 			text : this.background.name }]
 	});
+	this.startingLevel = settings.characterInfo.startingLevel;
 	
 	this.avatarName.setInputText(settings.characterInfo.characterName);
 	this.avatarHistoryInput.setInputText(settings.characterInfo.characterHistory);
@@ -496,6 +497,7 @@ NewCampaignMenuModule.prototype.collectAvatarSettings = function(){
 		traits : traits,
 		characterName : characterName,
 		characterHistory : characterHistory,
+		startingLevel : this.startingLevel,
 		setAppearance : appearanceActive
 	};
 	return avatarSettings;
@@ -507,7 +509,9 @@ NewCampaignMenuModule.prototype.getBackgroundSettings = function() {
 	
 	if (this.mSQHandle !== null)
 	{
-		SQ.call(this.mSQHandle, 'getBackgroundSettings', [this.background.fileName, this.mScenarios[this.mSelectedScenario]], function(settings){
+		SQ.call(this.mSQHandle, 'getBackgroundSettings', 
+			{background: this.background.fileName, scenarioID: this.mScenarios[this.mSelectedScenario].ID},
+		function(settings){
 			
 			self.traitsModule.setTraitsCollection(settings.traits);
 			self.traitsModule.resetTraits();

@@ -167,7 +167,7 @@ this.avatar_manager <- {
 	{
 		//TODO:
 		local traits = [];
-		logInfo("checking extra traits");
+		logInfo("checking extra traits:" + _selectedScenarioId);
 		if ("Traits" in ::AvatarMod.Const.ScenarioBackgrounds[_selectedScenarioId])
 		{
 			logInfo("foundExtraTraits")
@@ -270,7 +270,6 @@ this.avatar_manager <- {
 		
 		
 		local startingLevel = this.getBackgroundStartingLevel(_scenarioId);
-		
 		local characterInfo = {
 			characterName = name,
 			characterHistory = description,
@@ -358,6 +357,7 @@ this.avatar_manager <- {
 		{
 			return;
 		}
+		
 		this.World.Statistics.getFlags().set("AvatarMod_AvatarCreated", true);
 	
 		local roster = this.World.getPlayerRoster();
@@ -380,22 +380,11 @@ this.avatar_manager <- {
 		if (avatarBro == null) {
 			logInfo("avatar - new bro");
 			avatarBro = roster.create("scripts/entity/tactical/player");
-			
-			logInfo("background: " + settings.background.fileName);
-			
-			
+						
 			avatarBro.setStartValuesEx([
 				settings.background.fileName
 			]);
-			logInfo("skills: " + avatarBro.getSkills());
-			logInfo("skills: " + avatarBro.getBackground().getContainer());
-			
-			
-			logInfo("bg: " + avatarBro.getSkills().getSkillByID("background.barbarian"));
-			logInfo("bg: " + avatarBro.getBackground());
-			
-			logInfo("skills2: " + avatarBro.getSkills().getSkillByID("background.barbarian").getContainer());
-			logInfo("skills2: " + avatarBro.getBackground().getContainer());
+	
 			avatarBro.getSkills().add(this.new("scripts/skills/traits/player_character_trait"));
 			
 		}
@@ -408,12 +397,10 @@ this.avatar_manager <- {
 			avatarBro.m.Background = background;
 			avatarBro.m.Ethnicity = avatarBro.m.Background.getEthnicity();
 		}
-		logInfo("avatarBro: " + avatarBro);
-		logInfo("skills: " + avatarBro.getSkills());
-		logInfo("skills: " + avatarBro.getBackground().getContainer());
 		
 		
-		logInfo(avatarBro.getBackground().getContainer().getActor().Name);
+		
+		logInfo(avatarBro.getBackground().getContainer().getActor().getName());
 		
 		// remove existing traits
 		foreach( trait in this.Const.CharacterTraits ) {
@@ -425,7 +412,7 @@ this.avatar_manager <- {
 			{
 				continue;
 			}
-			else(this.String.contains(s.getID(), "trait"))
+			else if(this.String.contains(s.getID(), "trait"))
 			{
 				traitsToRemove.push(s.getID());
 			}
@@ -468,17 +455,18 @@ this.avatar_manager <- {
 		avatarBro.getBackground().m.RawDescription = settings.characterHistory;
 		logInfo("avatar background");
 		logInfo(avatarBro.getBackground().m.ID);
-		logInfo(avatarBro.getBackground().getContainer().getActor().Name);
+		
+		logInfo(avatarBro.getBackground().getContainer().getActor().getName());
 		avatarBro.getBackground().buildDescription(true);
 		this.logInfo(settings.characterName);
 		avatarBro.setName(settings.characterName);
 		
 		
-		if ("startingLevel" in settings.background) {
-			this.logInfo("avatar starting level: " + settings.background.startingLevel)
-			avatarBro.m.PerkPoints = settings.background.startingLevel -1;
-			avatarBro.m.LevelUps = settings.background.startingLevel - 1;
-			avatarBro.m.Level = settings.background.startingLevel;
+		if ("startingLevel" in settings) {
+			this.logInfo("avatar starting level: " + settings.startingLevel)
+			avatarBro.m.PerkPoints = settings.startingLevel -1;
+			avatarBro.m.LevelUps = settings.startingLevel - 1;
+			avatarBro.m.Level = settings.startingLevel;
 		} else {
 			avatarBro.m.PerkPoints = 0;
 			avatarBro.m.LevelUps = 0;

@@ -194,7 +194,7 @@ this.appearance_manager <- {
 		//logInfo(spriteName + ":" + brushName);
 		if (sprite == null)
 		{
-			logInfo("sprite " + spriteName + " is null")
+			//logInfo("sprite " + spriteName + " is null")
 			return;
 		}
 		if(brushName == "")

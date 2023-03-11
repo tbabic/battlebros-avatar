@@ -226,8 +226,3 @@ AvatarAppearanceModule.prototype.getAppearanceOptions = function ()
 
 	});
 };
-
-AvatarAppearanceModule.prototype.logging = function(s)
-{
-	SQ.call(this.mSQHandle, 'logging', s);
-}

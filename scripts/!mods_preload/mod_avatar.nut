@@ -32,10 +32,10 @@
 			
 		};
 		
-		o.getBackgroundSettings <- function( background, scenarioId )
+		o.getBackgroundSettings <- function( params )
 		{
-			logInfo("getBackgroundSettings:" + background);
-			return ::AvatarMod.AvatarManager.getBackgroundSettings(background);	
+			logInfo("getBackgroundSettings:" + params.background + ";" + params.scenarioID);
+			return ::AvatarMod.AvatarManager.getBackgroundSettings(params.background, params.scenarioID);	
 			
 		};
 		
@@ -49,28 +49,23 @@
 		
 		o.getAppearanceOptions <- function(param = null)
 		{
-			logInfo("getAppearanceOptions");
+			//logInfo("getAppearanceOptions");
 			local options = ::AvatarMod.AppearanceManager.getAppearanceOptions();
 			return options;
 		};
 		
 		o.updateAppearance <- function(data)
 		{
-			logInfo("updateAppearance");
+			//logInfo("updateAppearance");
 			return ::AvatarMod.AppearanceManager.updateAllLayers(data);
 		}
 		
 		o.updateAppearanceLayer <- function(params)
 		{
-			logInfo("updateAppearanceLayer");
+			//logInfo("updateAppearanceLayer");
 			return ::AvatarMod.AppearanceManager.updateLayer(params.layer, params.data);
 		}
-		
-		o.logging <- function(s)
-		{
-			logInfo(s);
-		}
-		
+			
 		
 	});
 	
