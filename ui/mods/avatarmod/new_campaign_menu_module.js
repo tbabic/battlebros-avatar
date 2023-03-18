@@ -72,6 +72,7 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		row.append(title);
 
 		var inputLayout = $('<div class="l-text-area"/>');
+		
 		row.append(inputLayout);
 		var outline = $('<div class="avatar-history-border"/>')
 		var outline2 = $('<div class="avatar-history-border"/>')
@@ -79,7 +80,7 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		
 		this.avatarHistory = $('<textarea class="history-input"/>')
 		outline.append(this.avatarHistory);
-		
+		this.textAreaSanitizer(this.avatarHistory);
 		this.avatarHistoryInput = outline2.createInput('', 0, 1000, 1, undefined, 'avatar-history title-font-normal');
 		
 		var row = $('<div class="row" />');
@@ -527,6 +528,65 @@ NewCampaignMenuModule.prototype.getBackgroundSettings = function() {
 			
 		});
 	}
+}
+
+NewCampaignMenuModule.prototype.textAreaSanitizer = function (_element)
+{
+	var data = { denyMultiProcess: false }
+	_element.on('keydown.input', null, _element, function (_event)
+	{
+		
+		var self = _event.data;
+        var data = self.data('input');
+		var code = _event.which || _event.keyCode;
+		if (code === KeyConstants.Tabulator ||
+            code === KeyConstants.ArrowLeft ||
+            code === KeyConstants.ArrowRight ||
+            code === KeyConstants.ArrowUp ||
+            code === KeyConstants.ArrowDown
+            )
+        {
+           	if(data.denyMultiProcess)
+			{
+				self.data('input', data);
+				return false;
+			}
+			data.denyMultiProcess = true;
+			self.data('input', data);
+			return true;
+        }
+
+        var self = _event.data;
+        var data = self.data('input');		
+		
+		if(_event.ctrlKey && code == KeyConstants.V)
+		{
+			if(data.denyMultiProcess)
+			{
+				self.data('input', data);
+				return false;
+			}
+			data.denyMultiProcess = true;
+			self.data('input', data);
+
+		}
+
+        self.data('input', data);
+
+        return true;
+    });
+	
+	_element.on('keyup.input', null, _element, function (_event)
+	{
+        var self = _event.data;
+		var data = self.data('input');
+
+		data.denyMultiProcess = false;
+
+        self.data('input', data);
+    });
+	
+	_element.data('input', data);
 }
 
 
