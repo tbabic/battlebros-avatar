@@ -65,6 +65,22 @@ this.appearance_manager <- {
 	
 	function updateAllLayers(data = null, actor = null)
 	{
+		if (data == null)
+		{
+			logInfo("all layers data is null");
+			data = this.m.Data;
+		}
+		if (actor == null)
+		{
+			actor = this.m.Actor;
+		}
+		if (actor == null)
+		{
+			logInfo("all layers actor null");
+			this.initializeActor();
+			actor = this.m.Actor;
+		}
+		
 		this.updateLayer("head", data, actor);
 		this.updateLayer("body", data, actor);
 		this.updateLayer("hairColor", data, actor);
@@ -78,6 +94,13 @@ this.appearance_manager <- {
 	
 	function updateLayer( layer, data = null, actor = null)
 	{
+		logInfo("updateLayer: " + layer);
+	
+		if (data == null)
+		{
+			logInfo("layer data is null");
+			data = this.m.Data;
+		}
 		local temp = actor;
 		if (temp == null)
 		{
@@ -85,13 +108,12 @@ this.appearance_manager <- {
 		}
 		if (temp == null)
 		{
-			logInfo("actor null");
-			initializeActor();
+			logInfo("layer actor null");
+			this.initializeActor();
+			temp = this.m.Actor;
+			return this.updateAllLayers(data, temp);
 		}
-		if (data == null)
-		{
-			data = this.m.Data;
-		}
+		
 		
 		
 		local color = data.HairColor;
@@ -213,6 +235,7 @@ this.appearance_manager <- {
 	function initializeActor()
 	{
 		local tempRoster = this.World.getTemporaryRoster();
+		tempRoster.clear();
 		this.m.Actor = tempRoster.create("scripts/entity/tactical/human");
 		this.m.Actor.setDirty(true);
 	}

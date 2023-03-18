@@ -16,7 +16,7 @@
 
     //include the config file
     ::include("AvatarMod/const/avatar_globals");
-	::include("AvatarMod/utils/appearance_manager");
+	::include("AvatarMod/utils/appearance_manager"); //??
 
     //put the manager in the namespace
     ::AvatarMod.AvatarManager <- this.new("scripts/scenarios/avatar_manager");
@@ -58,12 +58,17 @@
 		{
 			//logInfo("updateAppearance");
 			return ::AvatarMod.AppearanceManager.updateAllLayers(data);
+			local value = ::AvatarMod.AppearanceManager.updateAllLayers(data);
+			logInfo("update all layers:" + value);
+			return value;
 		}
 		
 		o.updateAppearanceLayer <- function(params)
 		{
 			//logInfo("updateAppearanceLayer");
-			return ::AvatarMod.AppearanceManager.updateLayer(params.layer, params.data);
+			local value = ::AvatarMod.AppearanceManager.updateLayer(params.layer, params.data);
+			logInfo("update layer:" + value);
+			return value;
 		}
 			
 		
@@ -100,18 +105,6 @@
 		
 	});
 	
-	::mods_hookClass("ui/screens/world/modules/world_town_screen/town_barber_dialog_module", function(o) {
-		logInfo("hook barber");
-		local onEntrySelected = ::mods_getMember(o, "onEntrySelected");
-		::mods_override(o, "onEntrySelected", function(_entityID) {
-			local value = onEntrySelected(_entityID);
-			logInfo(value);
-			return value;
-		});
-	});
-	
-	
-
 
 });
 
