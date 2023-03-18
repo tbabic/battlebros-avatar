@@ -93,18 +93,15 @@
 			}
 			return false;
 		});
-	});
-	
-	::mods_hookNewObjectOnce("states/world/asset_manager", function(o) {
-
-		local setCampaignSettings = o.setCampaignSettings;
-		::mods_override(o, "setCampaignSettings", function(_settings) {
-			setCampaignSettings(_settings);
+		
+		local onSpawnPlayer = ::mods_getMember(o, "onSpawnPlayer")
+		::mods_override(o, "onSpawnPlayer", function() {
+			onSpawnPlayer();
 			::AvatarMod.AvatarManager.setAvatar(); // no need to pass settings anymore, the function has them in the Manager
 		});
-		
 	});
 	
+
 
 });
 

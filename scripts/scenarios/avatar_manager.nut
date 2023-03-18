@@ -352,12 +352,13 @@ this.avatar_manager <- {
 	}
 	
 	function setAvatar() {
+		
 		local settings = this.m.AvatarSettings;
 		if(!settings.active)
 		{
 			return;
 		}
-		
+		logInfo("setAvatar settings");
 		this.World.Statistics.getFlags().set("AvatarMod_AvatarCreated", true);
 	
 		local roster = this.World.getPlayerRoster();
@@ -370,6 +371,7 @@ this.avatar_manager <- {
 		for( local i = 0; i < bros.len(); i++ )
 		{
 			local bro = bros[i];
+			logInfo("existing bro: " + bro.getName() + " - " + bro.getID());
 			if (bro.getSkills().hasSkill("trait.player")) {
 				avatarBro = bro;
 				logInfo("avatar - found bro");
@@ -388,7 +390,7 @@ this.avatar_manager <- {
 			avatarBro.getSkills().add(this.new("scripts/skills/traits/player_character_trait"));
 			
 		}
-		
+		logInfo("existing bro: " + avatarBro.getName() + " - " + avatarBro.getID());
 		// set background if different
 		if (!avatarBro.getSkills().hasSkill(settings.background.id)) {
 			logInfo("avatar - set background");
