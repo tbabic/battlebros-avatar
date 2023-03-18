@@ -75,13 +75,11 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 		
 		row.append(inputLayout);
 		var outline = $('<div class="avatar-history-border"/>')
-		var outline2 = $('<div class="avatar-history-border"/>')
 		inputLayout.append(outline);
 		
 		this.avatarHistory = $('<textarea class="history-input"/>')
 		outline.append(this.avatarHistory);
 		this.textAreaSanitizer(this.avatarHistory);
-		this.avatarHistoryInput = outline2.createInput('', 0, 1000, 1, undefined, 'avatar-history title-font-normal');
 		
 		var row = $('<div class="row" />');
 		rightColumn.append(row);
@@ -280,7 +278,6 @@ NewCampaignMenuModule.prototype.setAvatarSettings = function(settings) {
 	this.startingLevel = settings.characterInfo.startingLevel;
 	
 	this.avatarName.setInputText(settings.characterInfo.characterName);
-	this.avatarHistoryInput.setInputText(settings.characterInfo.characterHistory);
 	this.avatarHistory.val(settings.characterInfo.characterHistory);
 	this.pointsModule.totalPoints = settings.totalPoints;
 	this.pointsModule.changePoints(0);
@@ -486,7 +483,6 @@ NewCampaignMenuModule.prototype.collectAvatarSettings = function(){
 	
 	var characterName = this.avatarName.getInputText();
 	var characterHistory = this.avatarHistory.val();
-	var characterHistory = this.avatarHistoryInput.getInputText();
 	var avatarActive = this.mAvatarCheckbox.is(':checked');
 	var appearanceActive = this.mAppearanceCheckbox.is(':checked');
 	
