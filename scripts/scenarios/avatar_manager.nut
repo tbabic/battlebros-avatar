@@ -287,7 +287,8 @@ this.avatar_manager <- {
 			characterInfo = characterInfo,
 			traits = traits,
 			totalPoints = ::AvatarMod.Const.TotalPoints,
-			totalTalents = ::AvatarMod.Const.TotalTalents
+			totalTalents = ::AvatarMod.Const.TotalTalents,
+			scenarioID = _scenarioId
 		};
 		
 		local scenarioSettings = this.m.scenarioSettingsMap[_scenarioId];

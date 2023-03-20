@@ -255,8 +255,18 @@ NewCampaignMenuModule.prototype.avatarSettings = function(settings) {
 
 NewCampaignMenuModule.prototype.setAvatarSettings = function(settings) {
 	
-	
-
+	if (this.cachedScenarioID != null && settings.scenarioID == null)
+	{
+		return;
+	}
+	if (this.cachedScenarioID != null && settings.scenarioID == this.cachedScenarioID)
+	{
+		return;
+	}
+	if (settings.scenarioID != null)
+	{
+		this.cachedScenarioID = settings.scenarioID;
+	}
 	
 	for(skill in settings.attributes) {
 		var attr = settings.attributes[skill];
