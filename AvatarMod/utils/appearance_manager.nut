@@ -74,7 +74,7 @@ this.appearance_manager <- {
 		{
 			actor = this.m.Actor;
 		}
-		if (actor == null)
+		if (actor == null || !this.checkActorAlive(actor))
 		{
 			logInfo("all layers actor null");
 			this.initializeActor();
@@ -106,15 +106,13 @@ this.appearance_manager <- {
 		{
 			temp = this.m.Actor;
 		}
-		if (temp == null)
+		if (temp == null || !this.checkActorAlive(temp))
 		{
 			logInfo("layer actor null");
 			this.initializeActor();
 			temp = this.m.Actor;
 			return this.updateAllLayers(data, temp);
 		}
-		
-		
 		
 		local color = data.HairColor;
 		
@@ -212,6 +210,7 @@ this.appearance_manager <- {
 			logInfo("updateSprite actor null");
 			return;
 		}
+		
 		local sprite = actor.getSprite(spriteName);
 		//logInfo(spriteName + ":" + brushName);
 		if (sprite == null)
@@ -246,6 +245,31 @@ this.appearance_manager <- {
 		local tempRoster = this.World.getTemporaryRoster();
 		tempRoster.clear();
 		this.m.Actor = null;
+	}
+	
+	function checkActorAlive(actor)
+	{
+		local sprites = ["head", "body", "hair", "beard", "tattoo_head", "tattoo_body"];
+		foreach(spriteName in sprites) {
+			local sprite = actor.getSprite(spriteName);
+			if(sprite == null) {
+				return false;
+			}	
+		}
+
+		return true;
+	}
+	
+	function checkSpriteAlive(actor, sprite)
+	{
+		sprites = ["head", "body", "hair", "beard", "tattoo_head", "tattoo_body"];
+		local sprite = actor.getSprite(spriteName);
+		if(sprite == null) {
+			this.initializeActor();
+			return this.updateAllLayers();
+			
+		}	
+		return true;
 	}
 	
 	function logSprites(actor)
