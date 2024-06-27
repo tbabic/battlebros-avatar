@@ -1,6 +1,6 @@
 this.avatar_manager <- {
 	m = {
-		globalSettings = {},
+		globalSettings = null,
 		scenarioSettingsMap = {},
 		AvatarSettings = null,
 		backgroundInstances = {},
@@ -9,7 +9,11 @@ this.avatar_manager <- {
 	function create()
 	{
 		this.m.allTraits <- clone this.Const.CharacterTraits;
+
+	}
 	
+	function initializeGlobalSettings()
+	{
 		local a = {
 			Hitpoints = [
 				50,
@@ -44,7 +48,7 @@ this.avatar_manager <- {
 				110
 			]
 		};
-
+		this.m.globalSettings = {};
 		this.m.globalSettings.attributes <- {};
 		foreach(key, value in a)
 		{
@@ -347,6 +351,10 @@ this.avatar_manager <- {
 	
 	function getSettings(_scenarioId) {
 		local settings = {};
+		if (this.m.globalSettings == null)
+		{
+			this.initializeGlobalSettings();
+		}
 		settings.global <- this.m.globalSettings;
 		settings.scenario <- this.getScenarioSettings(_scenarioId);
 		return settings;
