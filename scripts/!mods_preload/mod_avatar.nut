@@ -43,7 +43,7 @@
 		local onStartButtonPressed = o.onStartButtonPressed;
 		o.onStartButtonPressed = function(_settings)
 		{
-			::AvatarMod.AvatarManager.m.AvatarSettings <- _settings[11];
+			::AvatarMod.AvatarManager.m.AvatarSettings <- _settings.avatar;
 			return onStartButtonPressed(_settings);
 		};
 		

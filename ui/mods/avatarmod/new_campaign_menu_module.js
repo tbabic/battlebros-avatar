@@ -4,7 +4,7 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 	var contentContainer = this.mDialogContainer.findDialogContentContainer();
 	
 	//TODO: third panel add option to not use avatar mod
-	var columns = $(this.mThirdPanel).find(".column");
+	var columns = $(this.mDifficultySelectionPanel).find(".column");
 	var thirdPanelRightColumn = $(columns[1]);
 	var row = $('<div class="row" />');
 	thirdPanelRightColumn.append(row);
@@ -112,9 +112,8 @@ NewCampaignMenuModule.prototype.avatarMod = function ()
 	this.appearanceModule.createDIV(this.mFifthPanel);
 	
 		
-	this.panels = [this.mFirstPanel, this.mSecondPanel, this.mThirdPanel, this.mFourthPanel, this.mFifthPanel];
+	this.panels = [this.mOriginSelectionPanel, this.mCompanyCrisisSelectionPanel, this.mDifficultySelectionPanel, this.mFourthPanel, this.mFifthPanel];
 	this.currentPanel = 0;
-		
 	
 	this.mStartButton.unbind("click");
 	this.mStartButton.on("click", function ()
@@ -230,7 +229,7 @@ AvatarMod.collectSettings = NewCampaignMenuModule.prototype.collectSettings;
 NewCampaignMenuModule.prototype.collectSettings = function ()
 {
 	var settings = AvatarMod.collectSettings.call(this);
-	settings.push(this.collectAvatarSettings());
+	settings.avatar = this.collectAvatarSettings();
 	return settings;
 };
 
