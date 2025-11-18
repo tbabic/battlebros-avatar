@@ -11,7 +11,7 @@
 ::AvatarMod.Const.ScenarioBackgrounds["scenario.anatomists"] <- {
 	Background = "sellsword_background",
 	Description = "Fueled by an unquenchable thirst for knowledge, the Anatomists have spent years dissecting the exoctic and the alien. With social mores dogging their research, however, they\'ve turned to you to form a mercenary company and provide them a new source of fresh specimens.",
-	AlternativeBackgrounds = ["swordmaster_background", "anatomist_background", "retired_soldier_background", "assasin_background", "beast_hunter_background"]
+	AlternativeBackgrounds = ["swordmaster_background", "anatomist_background", "retired_soldier_background", "assassin_background", "beast_hunter_background"]
 };
 ::AvatarMod.Const.ScenarioBackgrounds["scenario.beast_hunters"] <- {
 	Background = "beast_hunter_background",
@@ -73,7 +73,7 @@
 ::AvatarMod.Const.ScenarioBackgrounds["scenario.southern_quickstart"] <- {
 	Background = "companion_ranged_southern_background",
 	Description = "You and your small band of mercenaries have done the dirty work of small-time merchants for years, yet you\'re barely a step above brigands. You want to be bigger than that. You want it all. And the Gilder will reveal to you the way.",
-	AlternativeBackgrounds = ["sellsword_background", "assasin_southern_background", "retired_soldier_background"]
+	AlternativeBackgrounds = ["sellsword_background", "assassin_southern_background", "retired_soldier_background"]
 };
 ::AvatarMod.Const.ScenarioBackgrounds["scenario.trader"] <- {
 	Background = "peddler_background",
