@@ -402,8 +402,11 @@ this.avatar_manager <- {
 		logInfo("existing bro: " + avatarBro.getName() + " - " + avatarBro.getID());
 		// set background if different
 		if (!avatarBro.getSkills().hasSkill(settings.background.id)) {
+			logInfo("existing background id: " + settings.background.id);
+			logInfo("existing background file: " + settings.background.fileName);
 			logInfo("avatar - set background");
-			local background = this.new("scripts/skills/backgrounds/" + _backgrounds[this.Math.rand(0, _backgrounds.len() - 1)]);
+			local background = this.new("scripts/skills/backgrounds/" + settings.background.fileName);
+			avatarBro.m.Skills.removeByType(this.Const.SkillType.Background);
 			avatarBro.m.Skills.add(background);
 			avatarBro.m.Background = background;
 			avatarBro.m.Ethnicity = avatarBro.m.Background.getEthnicity();
